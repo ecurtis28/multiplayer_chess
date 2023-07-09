@@ -1,0 +1,20 @@
+.home-button {
+  margin: 0 auto;
+  display: block;
+  transform: translateY(6px);
+  border: none;
+  width: 200px;
+  height: 50px;
+  background-color: rgb(247, 194, 145);
+  color: #5a342e;
+  cursor: pointer;
+  font-size: 15px;
+  font-family: "Barlow", cursive;
+}
+.home-button:active,
+.home-button:hover {
+  background-color: rgb(248, 203, 161);
+}
+.home-button-link {
+  text-decoration: none;
+}

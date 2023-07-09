@@ -1,0 +1,15 @@
+.button {
+  color: white;
+  width: 210px;
+  height: 50px;
+  border-radius: 3px;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  background-color: rgb(1, 128, 128);
+  font-family: "Barlow", cursive;
+}
+.button:hover,
+.button:active {
+  background-color: rgb(18, 158, 158);
+}

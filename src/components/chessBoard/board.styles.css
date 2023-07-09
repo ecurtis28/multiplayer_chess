@@ -1,0 +1,11 @@
+.board {
+  padding: 1rem 0.76rem 0.7rem 1rem;
+  margin: 1.5rem auto; /** centered */
+  border-radius: 12px;
+  /* box-shadow: 0 0 10px 1px #e9e7e7; */
+  width: calc(100vh * 0.9);
+  height: calc(100vh * 0.85);
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  background-color: rgb(218, 172, 112);
+}

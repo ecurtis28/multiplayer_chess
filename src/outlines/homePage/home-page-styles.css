@@ -1,0 +1,86 @@
+form {
+  width: 80%;
+  height: 100%;
+}
+
+.input {
+  width: 80%;
+  padding: 1.2rem 2rem;
+  outline: none;
+  border: 1px solid rgb(53, 142, 184);
+  border-radius: 3px;
+  margin: 24px 0;
+  font-size: 18px;
+}
+.input::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #8b4f42c5;
+  opacity: 1; /* Firefox */
+}
+
+.input:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #8b4f42c5;
+}
+
+.input::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: #8b4f42c5;
+}
+.gameID {
+  background-color: #a35b4a;
+  color: #f1fcff;
+  border-radius: 16px;
+  padding: 0.8rem 1.6rem;
+  margin: 24px 0;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.home-img {
+  width: 50%;
+  height: 100%;
+  left: 0;
+  object-fit: cover;
+}
+
+hr {
+  margin: 24px 0;
+  font-size: 18px;
+}
+
+.share {
+  margin: 16px auto;
+  width: 50%;
+}
+.home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.gameID-input::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #8b4f42c5;
+  opacity: 1; /* Firefox */
+}
+
+.gameID-input-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #8b4f42c5;
+}
+
+.gameID-input:-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: #8b4f42c5;
+}
+.gameID-input {
+  width: 80%;
+  padding: 1.2rem 2rem;
+  outline: none;
+  border: 1px solid rgb(53, 142, 184);
+  border-radius: 3px;
+  margin: 3px 0 0 0;
+  font-size: 18px;
+}
