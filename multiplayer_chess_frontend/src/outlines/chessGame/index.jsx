@@ -30,7 +30,7 @@ import {
   setOpponentLeftState,
 } from "../../context/action.js";
 
-const socket = io.connect("localhost:3001", {
+const socket = io.connect("https://multiplayer-chess-site-backend.onrender.com", {
   reconnection: true,
   reconnectionDelay: 500,
   reconnectionAttempts: 10,
