@@ -30,11 +30,14 @@ import {
   setOpponentLeftState,
 } from "../../context/action.js";
 
-const socket = io.connect("https://multiplayer-chess-site-backend.onrender.com", {
-  reconnection: true,
-  reconnectionDelay: 500,
-  reconnectionAttempts: 10,
-});
+const socket = io.connect(
+  "https://multiplayer-chess-site-backend.onrender.com",
+  {
+    reconnection: true,
+    reconnectionDelay: 500,
+    reconnectionAttempts: 100,
+  }
+);
 
 // 1 Function to Add
 // Make it so you can't move opponents pieces
