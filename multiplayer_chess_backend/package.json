@@ -1,0 +1,33 @@
+{
+  "name": "multiplayer_chess",
+  "version": "1.0.0",
+  "author": "Evan Curtis",
+  "private": true,
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.22",
+    "socket.io": "^4.6.2"
+  },
+  "scripts": {
+    "startServer": "node src/index.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

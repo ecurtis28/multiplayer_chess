@@ -13,10 +13,11 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: `https://multiplayer-chess-site.onrender.com`,
+    origins: `https://localhost:3000`,
 
     // location of frontend (need to somehow specify port to render so that this code works)
     // I might be able just pass the render site link
+    // I also forgot to add socket.io connect link to frontend in chessGame which is probably why I received an error
     methods: ["GET", "POST"],
   },
 });
@@ -132,7 +133,7 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(port, () => console.log("Server running on localhost: " + port));
+server.listen(3001, () => console.log("Server running on localhost: " + 3001));
 // creates backend server listening on port 3001
 
 // If using create-react-app
