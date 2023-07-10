@@ -12,8 +12,9 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: `http://multiplayer-chess-site.onrender.com`,
+    origin: `http://localhost:3000`,
     // location of frontend (need to somehow specify port to render so that this code works)
+    // I might be able just pass the render site link
     methods: ["GET", "POST"],
   },
 });
@@ -131,3 +132,8 @@ io.on("connection", (socket) => {
 
 server.listen(port, () => console.log("Server running on localhost: " + port));
 // creates backend server listening on port 3001
+
+// If using create-react-app
+// To run production version locally after building with npm run build
+// use this command after it is built
+// npx serve -s build
