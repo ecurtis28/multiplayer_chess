@@ -5,9 +5,9 @@ const { addPlayer, game, removePlayer } = require("./game");
 const cors = require("cors");
 
 const app = express();
-
+const port = process.env.PORT || 3001;
 app.use(cors());
-
+console.log("testtesttest");
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -129,5 +129,5 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3001, () => console.log("Server running on localhost: " + 3001));
+server.listen(port, () => console.log("Server running on localhost: " + port));
 // creates backend server listening on port 3001

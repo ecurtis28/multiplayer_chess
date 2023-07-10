@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "startServer": "npm install; node multiplayer_chess_backend/src/index.js",
+    "startServer": "node multiplayer_chess_backend/src/index.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
