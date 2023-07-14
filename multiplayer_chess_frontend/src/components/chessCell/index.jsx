@@ -48,6 +48,7 @@ const Cell = (props) => {
   // onDragOver is passed e.preventDefault arrow function to make our ChessCell components draggable
   const handleDrop = () => {
     moveChessPiece(cell.pob);
+    console.log(cell.pob)
   };
   // we set the setFromPob function as a prop in the Piece component
 

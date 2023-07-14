@@ -39,7 +39,8 @@ const addPlayer = (data) => {
 
     // Creation of new player instance through player class
     games[gameID] = [player];
-    console.log(games[gameID]);
+    
+    console.log('game',games[gameID]);
     // Game is created
     // gameID and Player instance is added to the games object
     // console.log(games);
@@ -69,8 +70,6 @@ const addPlayer = (data) => {
 
   const currentDate = new Date();
 
-
-
   console.log(currentDate);
   console.log(`Player Joined: ${currentDate}`);
   // if opponents color is white this players color will be black, else vice versa.
@@ -78,11 +77,11 @@ const addPlayer = (data) => {
   // creates new player instance with player class
 
   games[gameID].push(player);
+    console.log(games[gameID])
   // adds player instance to existing game in games object (referred to by gameID)
   // console.log(games);
   // console.log(player.name);
-  console.log(games[gameID]);
-
+  // console.log(games[gameID]);
 
   let dateArray = [];
   let removePlayerFlag = false;
@@ -91,21 +90,20 @@ const addPlayer = (data) => {
     let item = games[gameID][k];
 
     dateArray.push(item.currentDate);
-    console.log("item", item);
-    console.log(item.currentDate);
- 
+    // console.log("item", item);
+    // console.log(item.currentDate);
   }
   orderedDates = dateArray.sort(function (a, b) {
     return a - b;
   });
-  console.log(dateArray);
-  console.log(orderedDates);
+  // console.log(dateArray);
+  // console.log(orderedDates);
 
   orderedDates.splice(2);
-  console.log(orderedDates);
+  // console.log(orderedDates);
   games[gameID].forEach(function (playerElement, index) {
     if (orderedDates.includes(playerElement.currentDate)) {
-      console.log("player confirmed", orderedDates, playerElement);
+      // console.log("player confirmed", orderedDates, playerElement);
     }
 
     if (!orderedDates.includes(playerElement.currentDate)) {
@@ -115,14 +113,18 @@ const addPlayer = (data) => {
       console.log("after deletion", games[gameID]);
       console.log(playerElement.name);
       removePlayerFlag = true;
+    
+
       removePlayerIdentifier = playerElement.playerID;
     }
-    console.log(removePlayerFlag);
+    // console.log(removePlayerFlag);
   });
-  console.log(games[gameID])
-  if ((removePlayerFlag = true && removePlayerIdentifier === player.playerID))
+  // console.log(games[gameID])
+  if ((removePlayerFlag === true && removePlayerIdentifier === player.playerID)){
     return { error: "This game is full" };
-// checks for oldest players and removes all other players except the oldest (first and second players to join the game)
+    // checks for oldest players and removes all other players except the oldest (first and second players to join the game)
+  }
+  
 
   if (opponent === undefined) {
     console.log(`Player ${player.playerID} not available`);
@@ -145,6 +147,8 @@ const addPlayer = (data) => {
 
 const removePlayer = (playerID) => {
   // playerID sent by client is the player that quit
+  console.log(games)
+ 
   for (const game in games) {
     // loops through all games
     let players = games[game];
@@ -160,28 +164,28 @@ const removePlayer = (playerID) => {
 
     console.log(index);
 
-    console.log(players);
+    // console.log(players);
 
-    console.log(games);
+    // console.log(games);
     // if (index === -1) {
     if (games[game].length === 0) {
       console.log(players);
+      console.log('delete game')
       delete games[game];
     }
     // }
     if (index !== -1) {
-      // if no player of that id is found
+      // if player of that id is found
 
       const disconnectedPlayer = players.splice(index, 1)[0];
 
       console.log("Player Left", playerID);
       console.log(disconnectedPlayer);
       // console.log(games[game], games[game]);
-
+      console.log("players after removal", players);
       return disconnectedPlayer;
       // deletes the player object from game and returns it
     }
-    console.log(players);
   }
 };
 function game(id) {

@@ -30,19 +30,34 @@ import {
   setOpponentLeftState,
 } from "../../context/action.js";
 
-const socket = io.connect(
-  "https://multiplayer-chess-site-backend.onrender.com",
-  {
-    reconnection: true,
-    reconnectionDelay: 500,
-    reconnectionAttempts: 100,
-  }
-);
+const socket = io.connect("localhost:3001", {
+  reconnection: true,
+  reconnectionDelay: 500,
+  reconnectionAttempts: 100,
+});
 
-// 1 Function to Add
-// Make it so you can't move opponents pieces
+// Known Bugs
+// Whenever you put down piece it suddenly triggers a message "Your Move" for opponent even if you didn't move the piece but simply picked it up !
 
-// Change the css to make it look unique
+// For some reason it randomly leaves the game for a player after a period of time I need to figure out why this is happening and fix it  (it might be a setting with socket.io/cors) ?
+
+// There is an occasion when you leave somehow a player with your name still resides in that game taking up a space even though no one is there
+
+// For some reason on different resolutions the css at the bottom of home page has a large gap of empty space !
+
+// When you pick up a piece it takes the color of the background cell in a block. I need to fix this so only the chess piece itself is visible.
+
+// Features to add
+// Make an outline around player that is a different color when it is your turn
+// Make it so it saves the previous positions from the game you had previously
+// When you are in check it shows the correct move to make to get out of check if there are no other options (only one move)
+// Remove Highlighting and add it only for a beginner mode which is triggered by a button in the game (it can be turned on or off mid game)
+// Add a concede button (which sends it to end game page with opponent winning)
+// Make it so that at the end game page the players name is added along with the color of the piece
+// When I put my pawn at the opponents beginning row I should be able to get any piece I want (check how the legal chess rule works), but it doesn't work. I need to add this as a feature.
+// I should be able to castle but my chess game currently doesn't allow it (check how castling works in a legal chess game). Add this functionality.
+// Add a tab icon and name (besides react app and react icon)
+
 const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 // the fen variable above represents the position of the chess pieces on the chess board
 // test checkmate
@@ -53,6 +68,7 @@ const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const Game = () => {
   let gameIDBoxReference = useRef();
   let gameIDBoxWidth = useRef();
+
   useEffect(() => {
     if (!endGame) {
       gameIDBoxWidth.current = gameIDBoxReference.current.offsetWidth;
@@ -75,6 +91,7 @@ const Game = () => {
     reloadState,
     receivedReloadState,
     opponentLeftState,
+    potentialMoves,
   } = useContext(Context);
 
   useEffect(() => {
@@ -99,7 +116,8 @@ const Game = () => {
     // then sending that position data up the hierarchy through  moveChessPiece for it to be utilized here
     chess.move({ from, to });
     // makes the chess move with the built in .move() function and the new Chess class we defined above which was assigned to the chess variable
-    console.log(to);
+    console.log(from, to);
+    console.log(potentialMoves);
     dispatch({ type: type.CLEAR_POTENTIAL_MOVES });
     // dispatch type.CLEAR_POTENTIAL_MOVES to reducer function
     // type references the object from action.js
@@ -109,7 +127,14 @@ const Game = () => {
     // system native to react and also due to useEffect hook above
     // the fen data used to update the fenState comes from the built in chess.fen() in chess.js that we altered with chess.move()
     console.log(chessGameIDRef);
-    socket.emit("move", { gameID: chessGameIDRef.current, from, to });
+    for (const move of potentialMoves) {
+      if (to === move) {
+        socket.emit("move", { gameID: chessGameIDRef.current, from, to });
+      }
+    }
+    // this for loop compares potential moves to the chess position sent from chessCell when a chessPiece is dropped
+    // this ensures that it will not trigger the "Your Turn" message for the opponent if it is not a legal move (aka you take the piece and drop it on a non-highlighted cell on the board)
+    // socket.emit("move", { gameID: chessGameIDRef.current, from, to });
 
     // emits move event to be listened for corresponding socket.id on back end
     // and passes the gameID, from, and to variables in an object

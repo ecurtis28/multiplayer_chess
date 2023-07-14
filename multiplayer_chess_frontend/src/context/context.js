@@ -34,7 +34,7 @@ export const ChessProvider = (props) => {
   const [state, dispatch] = useReducer(reducer, initState);
   // initial state of potential moves which is empty due to the fact that the chess piece hasn't been selected(picked up) yet
   // useReducer will act as an alternative state management functionality due to the more complex state structure
-
+console.log(state.potentialMoves)
   return (
     <Context.Provider value={{ ...state, dispatch }}>
       {children}

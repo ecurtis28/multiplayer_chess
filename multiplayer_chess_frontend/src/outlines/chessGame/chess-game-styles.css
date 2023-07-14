@@ -1,16 +1,10 @@
-html,
-body {
-  margin: 0;
-  height: 1006px;
-}
+
 .game {
   height: 1006px;
   background-image: url(../../assets/game-background.jpg);
   background-size: cover;
 }
-#root {
-  height: 1006px;
-}
+
 .board {
   margin-top: 50px;
 }
