@@ -31,7 +31,7 @@ const Piece = (props) => {
   const { dispatch } = useContext(Context);
 
   const handleDragStart = () => {
-    setFromPob(pob);
+    setFromPob(pob, imageName);
     setTimeout(() => {
       element.current.style.display = "none";
     }, 0);

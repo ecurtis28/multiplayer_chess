@@ -1,11 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
 import "./cell-styles.css";
 import { isLightSquare } from "../../functions";
 import Piece from "../chessPiece";
 import { Context } from "../../context/context";
 const Cell = (props) => {
-  const { cell, index, moveChessPiece, setFromPob, playerColor } = props;
+  const {
+    cell,
+    index,
+    moveChessPiece,
+    setFromPob,
+    playerColor,
+    parallelCastlingPositions,
+    targetedCastlingPosition,
+  } = props;
 
   // cell component which is iterated over the board array in the Board component to create a Cell component for each cell in the board array
   // it will have the pob and piece properties
@@ -46,9 +54,117 @@ const Cell = (props) => {
   // moveChessPiece is attached to onDrop event so that it will only trigger when an element is dropped after dragging
   // this will only update the position of the board after the piece is dropped and not before
   // onDragOver is passed e.preventDefault arrow function to make our ChessCell components draggable
+
+  useEffect(() => {
+    if (targetedCastlingPosition === "a1") {
+      if (cell.pob === "b1") {
+        console.log("b1 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+      if (cell.pob === "c1") {
+        console.log("c1 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+      if (cell.pob === "d1") {
+        console.log("d1 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+    }
+    if (targetedCastlingPosition === "h1") {
+      if (cell.pob === "f1") {
+        console.log("f1 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+      if (cell.pob === "g1") {
+        console.log("g1 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+    }
+    if (targetedCastlingPosition === "a8") {
+      if (cell.pob === "b8") {
+        console.log("b8 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+      if (cell.pob === "c8") {
+        console.log("c8 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+      if (cell.pob === "d8") {
+        console.log("d8 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+    }
+    if (targetedCastlingPosition === "h8") {
+      if (cell.pob === "f8") {
+        console.log("f8 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+      if (cell.pob === "g8") {
+        console.log("g8 is activated");
+        console.log(cell.piece);
+        console.log(parallelCastlingPositions.current.length);
+        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        // setParallelCastlingPositions((prevState) => {
+        //   return [...prevState, cell.piece];
+        // });
+      }
+    }
+  }, [targetedCastlingPosition, cell.piece, cell.pob]);
   const handleDrop = () => {
-    moveChessPiece(cell.pob);
-    console.log(cell.pob)
+    moveChessPiece(cell.pob, cell.piece);
+    console.log(cell.pob);
+    console.log(cell);
   };
   // we set the setFromPob function as a prop in the Piece component
 

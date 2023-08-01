@@ -1,11 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import { Context } from "../../context/context";
 import "./game-end-styles.css";
+
 //End of Game Page HTML Page Content
 
 const GameEnd = () => {
-  const { status, currentTurn } = useContext(Context);
-  console.log(Context);
+  const { status, currentTurn, playerColor, playerName, opponentName } =
+    useContext(Context);
+
+  const opponentColor = playerColor === "w" ? "b" : "w";
+  console.log(opponentColor);
+  let winnerName;
+
+  const statusPlaceholder = useRef("");
+  statusPlaceholder.current = status;
   let winner;
   if (status === "checkmate") {
     if (currentTurn === "b") {
@@ -14,6 +22,29 @@ const GameEnd = () => {
       winner = "black";
     }
   }
+  console.log(status);
+  if (status === "concede") {
+    console.log(playerColor);
+    winner = playerColor === "b" ? "white" : "black";
+
+    console.log(winner);
+  }
+  if (status === "opponentConcede") {
+    console.log(playerColor);
+    winner = playerColor === "b" ? "black" : "white";
+
+    console.log(winner);
+    statusPlaceholder.current = "concede";
+  }
+  // concede logic
+  if (winner.charAt(0) === playerColor) {
+    winnerName = playerName;
+  }
+  if (winner.charAt(0) === opponentColor) {
+    winnerName = opponentName;
+  }
+  // winner name render logic
+
   // Depending on status which is the game end condition, it will assign a winner and/or give the end game status
   const GameEndPage = () => {
     return (
@@ -23,11 +54,11 @@ const GameEnd = () => {
             <div className="description">
               <h1>Game End</h1>
               <p className="end">
-                The game ended in a <mark>{status}</mark>
+                The game ended in a <mark>{statusPlaceholder.current}</mark>
               </p>
               {winner && (
                 <p className="winner">
-                  <span>{winner}</span> won
+                  <span>{`${winnerName} (${winner})`}</span> won
                 </p>
               )}
             </div>

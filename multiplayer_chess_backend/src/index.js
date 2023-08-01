@@ -105,16 +105,37 @@ io.on("connection", (socket) => {
   socket.on("resetStates", () => {
     setTimeout(() => {
       socket.emit("resetStatesReceive");
-    }, 1800);
+    }, 3500);
   });
   // resets all reloadstates we defined in chessGame
-  socket.on("move", ({ from, to, gameID }) => {
+  socket.on("move", ({ from, to, gameID, promotionFlag, pauseGame }) => {
     // listens for move events from client
-    socket.broadcast.to(gameID).emit("opponentMove", { from, to });
+
+    socket.broadcast.to(gameID).emit("opponentMove", {
+      from,
+      to,
+      receivedPromotionFlag: promotionFlag,
+      receivedPauseGame: pauseGame,
+    });
 
     // emits the opponentMove event and from and to variable to the opponent
   });
+  socket.on("sendPromotionFlag", ({ fenState }) => {
+    console.log(fenState);
+    socket.broadcast
+      .to(clientGameID)
+      .emit("receivePromotionFlag", { receivedFenState: fenState });
+  });
+  socket.on("endPauseGame", () => {
+    console.log("endPauseGame");
+    socket.broadcast.to(clientGameID).emit("receiveEndPauseGame");
+  });
+  // sends endPauseGame trigger from player to server to other player
 
+  socket.on("sendConcede", () => {
+    socket.broadcast.to(clientGameID).emit("receiveConcede");
+  });
+  // sends concede trigger from player to server to other player
   socket.on("disconnect", () => {
     const player = removePlayer(socket.id);
     // use removePlayer() function in game.js to remove the player that disconnected from game/players array in games object

@@ -1,10 +1,10 @@
 import React from "react";
 import "./home-button-styles.css";
 
-const HomeButton = ({ onClick, children }) => {
+const HomeButton = ({ children }) => {
   return (
     <a className="home-button-link" href="/">
-      <button onClick={onClick} className="home-button">
+      <button  className="home-button">
         {children}
       </button>
     </a>

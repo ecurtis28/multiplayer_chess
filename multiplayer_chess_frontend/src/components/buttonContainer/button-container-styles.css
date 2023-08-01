@@ -1,0 +1,8 @@
+.flex-container {
+  width: fit-content;
+  display: flex;
+
+  transform: translateY(6px);
+  gap: 30px;
+  margin: 0 auto;
+}

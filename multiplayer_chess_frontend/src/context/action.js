@@ -15,6 +15,7 @@ export const type = {
   RECEIVE_RELOAD_STATE: "RECEIVE_RELOAD_STATE",
   SET_OPPONENT_LEFT_STATE: "SET_OPPONENT_LEFT_STATE",
   SET_CHESS_GAME_ID: "SET_CHESS_GAME_ID",
+  SET_STATUS: "SET_STATUS",
 };
 
 // action object which will be utilized to determine what logic to perform
@@ -67,4 +68,9 @@ export const setOpponentLeftState = (opponentLeftState) => ({
 export const setChessGameID = (chessGameID) => ({
   type: type.SET_CHESS_GAME_ID,
   chessGameID,
+});
+export const setStatus = (status) => ({
+  type: type.SET_STATUS,
+  status,
+
 });

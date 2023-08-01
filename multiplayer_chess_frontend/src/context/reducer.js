@@ -6,8 +6,14 @@ const getPosition = (chessMoves) => {
     if (chessMove.endsWith("+")) {
       chessMove = chessMove.slice(0, -1);
     }
-    // removes chessMove strings that end with '+' which seems to happen when you enter the enemy starting positions
+    // removes chessMove strings that end with '+' which seems to happen when you enter the enemy pawn starting positions
+    if(chessMove.includes("=")){
+      chessMove = chessMove.slice(0, -2)
+      console.log(chessMove)
+    }
 
+    // removes chessMove strings that have =Q or =B at end which seems to happen when you enter the king, queen, bishop, etc starting positions
+     
     const n = chessMove.length;
 
     return chessMove.substring(n - 2);
@@ -28,6 +34,7 @@ const reducer = (state, action) => {
   console.log(action);
   switch (action.type) {
     //action.type references the action object and the type sent from dispatch function
+    
     case type.SET_POTENTIAL_MOVES:
       // type references the object defined in action.js
 
@@ -92,6 +99,9 @@ const reducer = (state, action) => {
       return { ...state, opponentLeftState: action.opponentLeftState };
     case type.SET_CHESS_GAME_ID:
       return { ...state, chessGameID: action.chessGameID };
+    case type.SET_STATUS:
+      return { ...state, status: action.status };
+
     default:
       return state;
   }
