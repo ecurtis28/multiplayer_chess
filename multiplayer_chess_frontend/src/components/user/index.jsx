@@ -184,7 +184,7 @@ const User = ({
         console.log(promotedChessPieceFen);
         console.log("before", fenRow1Compare);
         fenRow1Compare.splice(alteredIndex, 1, promotedChessPieceFen);
-        // there is a bug where when white pawn promotes on b8 and clicks bishop it will promote to knight instead
+        
 
         console.log("after", fenRow1Compare);
         fenRow1CompareArray = fenRow1Compare;

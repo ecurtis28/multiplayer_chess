@@ -5,7 +5,7 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { Context } from "../../context/context";
 import { type } from "../../context/action";
-import Chess from "chess.js";
+import { Chess } from "chess.js"; // remove {} if using old chess.js version
 import { createChessBoard } from "../../functions";
 import { endGameState } from "../../functions/end-game.js";
 import Board from "../../components/chessBoard";
@@ -58,11 +58,29 @@ const socket = io.connect("localhost:3001", {
 // Whenever I rapidly refresh and error2 triggers (opponent is not available) it prevents the player from being able to reconnect when refreshing !
 // to fix this I should find a way to reload the page when error2 is triggered
 
+// Whenever I reload from white side and it reloads opponent if I move a piece it before opponent reloads it will not show on screen desyncing the game
+
+// Whenever I try and castle while under attack if I attempt more than once it will fill the newArray with more than 2 strings which is a bug !
+// I think this is due to the fact that chess.load is used multiple times which triggers rerenders and thus the dependencies (cell.cpob, cell.piece) in useEffect from chessCell
+
+// I need to change the way I am setting up my castling check/execution logic
+// I know the solution I must try I must instead of using splice, I will use a for loop to find start and end index of top row and bottom row, I will then take that row, and use a for loop
+// to replace all numbers with the same amount of "s for space" placeholders. I will then shift the king to the direction where I am castling,If the is king is inCheck it will trigger a flag
+//   I will then repeat this again, for the next position until it reaches the position it would be in it's final castling position, if it passes through check (the flag is triggered)
+// It will return  the piece to it's original position, other wise it will castle. For each king position change the fenRow will be calculated and rendered through the logic above
+// This is essentially what I did in user, and it is useful because it can be dynamic, and the FEN system is inherently dynamic with how empty spaces are represented (numbers)
+
+// Found a bug with the addition of the function check castling mechanism, if it attempts to try and move to a position with king and that position has enemy pieces covering all escapes
+// it will instantly checkmate. To prevent this from happening, I need to create a flag that turns on when checking if king piece is going through check, and turns off after it is finished looking for castling checks
+// when this flag is triggered it will prevent the opponent from being able to checkmate you
+
 // Sometimes when  pawn promotion occurs it somehow removes the one of the digits used in the fen (empty space) and makes it too short of a fen and so it crashes the program !
 // !!Solution Found!! The reason it was shortening the fen was because on the placeholder ("s") splice functionality it was using counter variable for the delete count instead of 1
 // The reason why this doesn't work is because when fenRow1CompareArray/fenRow2CompareArray have more than two space placeholders in the row in which pawn promotion occurs
 // The counter which is a number based on the amount of s placeholders at that certain character will then increase the delete count in splice to the amount of placeholders.
 // This will then shorten the last fen row which will make the final fen incompatiable with the chess.js library
+
+// Installing new chess.js library so I can get access to isAttacked function if it breaks everything revert to this version and try another solution "chess.js": "^0.10.3",
 
 // Features to add
 // Make an outline around player that is a different color when it is your turn !
@@ -70,11 +88,13 @@ const socket = io.connect("localhost:3001", {
 // Remove Highlighting and add it only for a beginner mode which is triggered by a button in the game (it can be turned on or off mid game) Cancel
 // Add a concede button (which sends it to end game page with opponent winning to both your opponent and yourself) !
 // Make it so that at the end game page the players name is added along with the color of the piece !
-// When I put my pawn at the opponents beginning row I should be able to get any piece I want  (pawn promotion) (check how the legal chess rule works), but it doesn't work. I need to add this as a feature.
+// When I put my pawn at the opponents beginning row I should be able to get any piece I want  (pawn promotion) (check how the legal chess rule works), but it doesn't work. I need to add this as a feature. !
 // I should be able to castle but my chess game currently doesn't allow it (check how castling works in a legal chess game). Add this functionality.
 // Add a tab icon and name (besides react app and react icon) !
 // test bug
-// const FEN = "rbrqkbnr/PPP2p1p/8/P3p3/2b2N2/8/pp2P2p/2qNKBNR w kq - 0 27";
+// const FEN = "r3kbnr/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/RNBQK2R w KQkq - 2 6";
+// const FEN = "rnbqk2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3KBNR w KQkq - 2 6";
+// const FEN = "r3k2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3K2R w KQkq - 2 6";
 
 const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 // the fen variable above represents the position of the chess pieces on the chess board
@@ -130,7 +150,7 @@ const Game = () => {
     useState(false);
 
   const [sendPromotionFlag, setSendPromotionFlag] = useState(false);
-
+  const [sendCastlingFen, setSendCastlingFen] = useState();
   // const movedCastlingPieces = useRef({
   //   h8BlackRook: false,
   //   a8BlackRook: false,
@@ -176,10 +196,12 @@ const Game = () => {
   const parallelCastlingPositions = useRef([]);
   const [targetedCastlingPosition, setTargetedCastlingPosition] =
     useState(null);
+
   const moveChessPiece = (pob, pieceInTargetCell) => {
     console.log(pauseGame);
     console.log(playerColor);
     console.log(chess);
+
     if (disableFlag.current === false) {
       if (pauseGame.current === false) {
         const from = fromPob.current;
@@ -240,31 +262,214 @@ const Game = () => {
             console.log(parallelCastlingPositions.current);
             let newArray = parallelCastlingPositions.current.slice();
             console.log(newArray.length);
-            const parallelCastlingPositionsFlag =
-              parallelCastlingPositions.current.every((item, index) => {
-                if (index % 2 === 0) {
-                  if (item === "") {
-                    return item;
-                  }
-                }
-              });
-
-            parallelCastlingPositions.current.forEach((item, index) => {
-              if (index % 2 === 1) {
-                console.log(item);
-                if (playerColor === "w") {
-                  // chess.isAttacked(item);
-                }
-                if (playerColor === "b") {
-                }
+            let parallelCastlingPositionsFlag = false;
+            let counter = 0;
+            parallelCastlingPositions.current.forEach((item) => {
+              if (item === "") {
+                counter++;
+              }
+              console.log(counter);
+              if (counter === newArray.length) {
+                console.log("success");
+                parallelCastlingPositionsFlag = true;
               }
             });
-            console.log(parallelCastlingPositionsFlag);
-            if (parallelCastlingPositionsFlag) {
-              // execute castling
-            }
+
             if (newArray.length >= 1) {
-              parallelCastlingPositions.current = new Array();
+              parallelCastlingPositions.current = [];
+            }
+
+            if (parallelCastlingPositionsFlag === true) {
+              // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
+
+              // chess.remove("b1");
+
+              let kingUnderAttack = false;
+              let chessFen = chess.fen();
+              let originChessFen = chessFen;
+              console.log(chessFen);
+              const kingIndex = chessFen.indexOf("K");
+              console.log(kingIndex);
+              let chessFenArray = chessFen.split("");
+
+              let fenIndex2Start;
+              let fenIndex2End;
+              for (let i = chessFenArray.length - 1; i >= 0; i--) {
+                console.log(chessFenArray[i]);
+
+                if (chessFenArray[i] === "/") {
+                  fenIndex2Start = i + 1;
+                  console.log(fenIndex2Start);
+                  break;
+                }
+              }
+
+              fenIndex2End = chess.fen().indexOf(" ");
+
+              let fenRow2 = chess.fen().slice(fenIndex2Start, fenIndex2End);
+
+              let fenRow2Compare = chess
+                .fen()
+                .slice(fenIndex2Start, fenIndex2End)
+                .split("");
+
+              console.log(fenRow2);
+              console.log(fenIndex2End);
+
+              for (let i = 0; i < fenRow2.length; i++) {
+                console.log(fenRow2[i]);
+                //  loop over fenRow2 to remove any potential numbers and replace it with placeholders
+
+                if (isFinite(fenRow2[i])) {
+                  const stringToNumber = Number(fenRow2[i]);
+                  console.log(stringToNumber);
+                  let char = "";
+                  for (let x = 0; x < stringToNumber; x++) {
+                    char = char + "s";
+                  }
+
+                  console.log(typeof fenRow2Compare, fenRow2Compare);
+                  fenRow2Compare.splice(i, 1, char);
+
+                  console.log(typeof fenRow2Compare, fenRow2Compare);
+                }
+              }
+              fenRow2Compare = fenRow2Compare.join("");
+              fenRow2Compare = fenRow2Compare.split("");
+              fenRow2 = fenRow2Compare.slice();
+              console.log(fenRow2Compare);
+
+              let fenRow2CompareArray;
+              function alterKingPosition() {
+                for (let i = fenRow2.length - 1; i >= 0; i--) {
+                  if (
+                    fenRow2Compare[i] === "s" &&
+                    fenRow2Compare[i + 1] === "K"
+                  ) {
+                    console.log(fenRow2Compare[i], fenRow2Compare[i + 1]);
+                    fenRow2Compare.splice(i, 2, "K", "s");
+                    fenRow2CompareArray = fenRow2Compare.slice();
+                    console.log(typeof fenRow2Compare, fenRow2Compare);
+
+                    break;
+                  }
+                }
+              }
+              function transformPlaceholders() {
+                let sCounter = 0;
+                console.log(fenRow2, fenRow2Compare, fenRow2CompareArray);
+                for (let i = 0; i < fenRow2Compare.length; i++) {
+                  console.log(i, fenRow2CompareArray[i]);
+                  if (fenRow2CompareArray[i] === "s") {
+                    sCounter++;
+                    console.log(sCounter);
+                    console.log(fenRow2CompareArray, fenRow2CompareArray[i], i);
+                  }
+
+                  if (
+                    fenRow2CompareArray[i] === "s" &&
+                    fenRow2CompareArray[i + 1] !== "s"
+                  ) {
+                    console.log(sCounter);
+                    fenRow2CompareArray.splice(
+                      i - sCounter + 1,
+                      sCounter,
+                      sCounter
+                    );
+                    i = 0;
+                    sCounter = 0;
+                    console.log(fenRow2CompareArray);
+                  }
+                }
+              }
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+              fenIndex2End = chess.fen().indexOf(" ");
+              alterKingPosition();
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+              transformPlaceholders();
+              console.log(chessFen);
+              chessFen =
+                chessFen.slice(0, fenIndex2Start) +
+                fenRow2CompareArray.join("") +
+                chessFen.slice(fenIndex2End);
+              console.log(chessFen);
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+
+              setFenState(chessFen);
+              chess.load(chessFen);
+              console.log(chess.in_check());
+              if (chess.in_check()) kingUnderAttack = true;
+
+              fenIndex2End = chess.fen().indexOf(" ");
+              alterKingPosition();
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+              transformPlaceholders();
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+              console.log(chessFen);
+              chessFen =
+                chessFen.slice(0, fenIndex2Start) +
+                fenRow2CompareArray.join("") +
+                chessFen.slice(fenIndex2End);
+              console.log(chessFen);
+
+              setFenState(chessFen);
+              chess.load(chessFen);
+              console.log(chess.in_check());
+              if (chess.in_check()) kingUnderAttack = true;
+
+              chess.load(chessFen);
+              setFenState(chessFen);
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+
+              if (kingUnderAttack) {
+                chess.load(originChessFen);
+                setFenState(originChessFen);
+              }
+              if (!kingUnderAttack) {
+                // console.log(chessFenArray.indexOf());
+                // chessFenArray.splice(kingIndex - 2, 4, "2", "K", "R", "1");
+                // let startPlaceholderIndex;
+                let endPlaceholderIndex;
+                fenIndex2End = chess.fen().indexOf(" ");
+                chessFenArray = chessFen.split("");
+                chessFenArray.splice(fenIndex2End + 1, 1, "b");
+                chessFen = chessFenArray.join("");
+                for (let i = fenRow2Compare.length - 1; i >= 0; i--) {
+                  if (fenRow2Compare[i] === "K") {
+                    endPlaceholderIndex = i + 2;
+                    console.log(endPlaceholderIndex);
+                    break;
+                  }
+                }
+
+                // for (let i = 0; i < fenRow2Compare.length; i++) {
+                //   if (fenRow2Compare[i] === "s") {
+                //     startPlaceholderIndex = i;
+                //     console.log(startPlaceholderIndex);
+                //     break;
+                //   }
+                // }
+                console.log(fenRow2Compare);
+                fenRow2Compare =
+                  "ssKR" + fenRow2Compare.slice(endPlaceholderIndex).join("");
+                fenRow2Compare = fenRow2Compare.split("");
+                chessFen =
+                  chessFen.slice(0, fenIndex2Start) +
+                  fenRow2CompareArray.join("") +
+                  chessFen.slice(fenIndex2End);
+                fenRow2CompareArray = fenRow2Compare.slice();
+                transformPlaceholders();
+
+                chessFen =
+                  chessFen.slice(0, fenIndex2Start) +
+                  fenRow2CompareArray.join("") +
+                  chessFen.slice(fenIndex2End);
+                console.log(chessFen);
+                setFenState(chessFen);
+                chess.load(chessFen);
+
+                setSendCastlingFen(chessFen);
+              }
             }
           }, 100);
         }
@@ -279,45 +484,327 @@ const Game = () => {
             setTargetedCastlingPosition(null);
           }, 300);
 
+          // setTimeout(() => {
+          //   console.log(parallelCastlingPositions.current);
+          //   let newArray = parallelCastlingPositions.current.slice();
+          //   console.log(newArray.length);
+          //   let parallelCastlingPositionsFlag = false;
+          //   let counter = 0;
+          //   parallelCastlingPositions.current.forEach((item) => {
+          //     if (item === "") {
+          //       counter++;
+          //     }
+          //     console.log(counter);
+          //     if (counter === newArray.length) {
+          //       console.log("success");
+          //       parallelCastlingPositionsFlag = true;
+          //     }
+          //   });
+
+          //   if (newArray.length >= 1) {
+          //     parallelCastlingPositions.current = [];
+          //   }
+
+          //   if (parallelCastlingPositionsFlag === true) {
+          //     // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
+
+          //     // chess.remove("b1");
+
+          //     let kingUnderAttack = false;
+          //     let chessFen = chess.fen();
+          //     let originChessFen = chessFen;
+          //     const index = chessFen.indexOf("K");
+          //     const chessFenArray = chessFen.split("");
+          //     function removeAdjacentNumbers() {
+          //       for (let i = 0; i < chessFenArray.length; i++) {
+          //         console.log(chessFenArray[i]);
+          //         if (isFinite(chessFenArray[i]) && chessFenArray[i] !== " ") {
+          //           console.log(
+          //             chessFenArray[i - 1],
+          //             isFinite(chessFenArray[i - 1]),
+          //             chessFenArray[i],
+          //             isFinite(chessFenArray[i]),
+          //             chessFenArray[i + 1],
+          //             isFinite(chessFenArray[i + 1])
+          //           );
+          //           if (
+          //             isFinite(chessFenArray[i - 1]) &&
+          //             chessFenArray[i - 1] !== " "
+          //           ) {
+          //             console.log(chessFenArray[i - 1]);
+          //             let combinedNumber =
+          //               Number(chessFenArray[i]) + Number(chessFenArray[i - 1]);
+          //             console.log(combinedNumber);
+          //             chessFenArray.splice(i - 1, 2, combinedNumber);
+          //           }
+          //           if (
+          //             isFinite(chessFenArray[i + 1]) &&
+          //             chessFenArray[i + 1] !== " "
+          //           ) {
+          //             console.log(chessFenArray[i + 1]);
+          //             let combinedNumber =
+          //               Number(chessFenArray[i]) + Number(chessFenArray[i + 1]);
+          //             console.log(combinedNumber);
+          //             chessFenArray.splice(i, 2, combinedNumber);
+          //           }
+          //         }
+          //       }
+          //     }
+          //     chessFenArray.splice(index, 2, "1", "K", "1");
+          //     chessFen = chessFenArray.join("");
+          //     console.log(chessFen);
+
+          //     chess.load(chessFen);
+          //     setFenState(chessFen);
+          //     console.log(chess.in_check());
+          //     console.log(newArray);
+          //     if (chess.in_check()) kingUnderAttack = true;
+
+          //     chessFenArray.splice(index, 3, "2", "K");
+          //     chessFen = chessFenArray.join("");
+          //     console.log(chessFen);
+
+          //     chess.load(chessFen);
+          //     setFenState(chessFen);
+          //     console.log(chess.in_check());
+          //     if (chess.in_check()) kingUnderAttack = true;
+
+          //     if (kingUnderAttack) {
+          //       chess.load(originChessFen);
+          //       setFenState(originChessFen);
+          //     }
+          //     if (!kingUnderAttack) {
+          //       chessFenArray.splice(index, 2, "1", "R", "K", "1");
+          //       let spaceIndex = chessFenArray.indexOf(" ");
+          //       console.log(spaceIndex);
+
+          //       chessFenArray.splice(spaceIndex + 1, 1, "b");
+
+          //       chessFen = chessFenArray.join("");
+          //       chess.load(chessFen);
+          //       setFenState(chessFen);
+
+          //       console.log(chessFen);
+          //       setSendCastlingFen(chessFen);
+          //     }
+          //   }
+          // }, 100);
+
           setTimeout(() => {
             console.log(parallelCastlingPositions.current);
             let newArray = parallelCastlingPositions.current.slice();
             console.log(newArray.length);
             let parallelCastlingPositionsFlag = false;
             let counter = 0;
-            parallelCastlingPositions.current.forEach((item, index) => {
-              if (index % 2 === 0) {
-                if (item === "") {
-                  counter++;
-                }
-                console.log(counter);
-                if (counter === newArray.length / 2) {
-                  console.log("success");
-                  parallelCastlingPositionsFlag = true;
-                }
+            parallelCastlingPositions.current.forEach((item) => {
+              if (item === "") {
+                counter++;
               }
-              if (index % 2 === 1) {
-                if (parallelCastlingPositionsFlag === true) {
-                  console.log(item);
-                  if (playerColor === "w") {
-                    console.log(chess.is_attacked(item, chess.WHITE));
-                  }
-                  if (playerColor === "b") {
-                    console.log(chess.is_attacked(item, chess.BLACK));
-                  }
-                }
+              console.log(counter);
+              if (counter === newArray.length) {
+                console.log("success");
+                parallelCastlingPositionsFlag = true;
               }
             });
-            console.log(parallelCastlingPositionsFlag);
 
-            if (parallelCastlingPositionsFlag) {
-              // execute castling
-            }
             if (newArray.length >= 1) {
-              parallelCastlingPositions.current = new Array();
+              parallelCastlingPositions.current = [];
+            }
+
+            if (parallelCastlingPositionsFlag === true) {
+              // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
+
+              // chess.remove("b1");
+
+              let kingUnderAttack = false;
+              let chessFen = chess.fen();
+              let originChessFen = chessFen;
+              console.log(chessFen);
+              const kingIndex = chessFen.indexOf("K");
+              console.log(kingIndex);
+              let chessFenArray = chessFen.split("");
+
+              let fenIndex2Start;
+              let fenIndex2End;
+              for (let i = chessFenArray.length - 1; i >= 0; i--) {
+                console.log(chessFenArray[i]);
+
+                if (chessFenArray[i] === "/") {
+                  fenIndex2Start = i + 1;
+                  console.log(fenIndex2Start);
+                  break;
+                }
+              }
+
+              fenIndex2End = chess.fen().indexOf(" ");
+
+              let fenRow2 = chess.fen().slice(fenIndex2Start, fenIndex2End);
+
+              let fenRow2Compare = chess
+                .fen()
+                .slice(fenIndex2Start, fenIndex2End)
+                .split("");
+
+              console.log(fenRow2);
+              console.log(fenIndex2End);
+
+              for (let i = 0; i < fenRow2.length; i++) {
+                console.log(fenRow2[i]);
+                //  loop over fenRow2 to remove any potential numbers and replace it with placeholders
+
+                if (isFinite(fenRow2[i])) {
+                  const stringToNumber = Number(fenRow2[i]);
+                  console.log(stringToNumber);
+                  let char = "";
+                  for (let x = 0; x < stringToNumber; x++) {
+                    char = char + "s";
+                  }
+
+                  console.log(typeof fenRow2Compare, fenRow2Compare);
+                  fenRow2Compare.splice(i, 1, char);
+
+                  console.log(typeof fenRow2Compare, fenRow2Compare);
+                }
+              }
+              fenRow2Compare = fenRow2Compare.join("");
+              fenRow2Compare = fenRow2Compare.split("");
+              fenRow2 = fenRow2Compare.slice();
+              console.log(fenRow2Compare);
+
+              let fenRow2CompareArray;
+              function alterKingPosition() {
+                for (let i = fenRow2.length - 1; i >= 0; i--) {
+                  if (
+                    fenRow2Compare[i] === "K" &&
+                    fenRow2Compare[i + 1] === "s"
+                  ) {
+                    console.log(fenRow2Compare[i], fenRow2Compare[i + 1]);
+                    fenRow2Compare.splice(i, 2, "s", "K");
+                    fenRow2CompareArray = fenRow2Compare.slice();
+                    console.log(typeof fenRow2Compare, fenRow2Compare);
+
+                    break;
+                  }
+                }
+              }
+              function transformPlaceholders() {
+                let sCounter = 0;
+                console.log(fenRow2, fenRow2Compare, fenRow2CompareArray);
+                for (let i = 0; i < fenRow2Compare.length; i++) {
+                  console.log(i, fenRow2CompareArray[i]);
+                  if (fenRow2CompareArray[i] === "s") {
+                    sCounter++;
+                    console.log(sCounter);
+                    console.log(fenRow2CompareArray, fenRow2CompareArray[i], i);
+                  }
+
+                  if (
+                    fenRow2CompareArray[i] === "s" &&
+                    fenRow2CompareArray[i + 1] !== "s"
+                  ) {
+                    console.log(sCounter);
+                    fenRow2CompareArray.splice(
+                      i - sCounter + 1,
+                      sCounter,
+                      sCounter
+                    );
+                    i = 0;
+                    sCounter = 0;
+                    console.log(fenRow2CompareArray);
+                  }
+                }
+              }
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+              fenIndex2End = chess.fen().indexOf(" ");
+              alterKingPosition();
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+              transformPlaceholders();
+              console.log(chessFen);
+              chessFen =
+                chessFen.slice(0, fenIndex2Start) +
+                fenRow2CompareArray.join("") +
+                chessFen.slice(fenIndex2End);
+              console.log(chessFen);
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+              setFenState(chessFen);
+              chess.load(chessFen);
+              console.log(chess.in_check());
+              if (chess.in_check()) kingUnderAttack = true;
+
+              fenIndex2End = chess.fen().indexOf(" ");
+              alterKingPosition();
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+              transformPlaceholders();
+              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
+              console.log(chessFen);
+              chessFen =
+                chessFen.slice(0, fenIndex2Start) +
+                fenRow2CompareArray.join("") +
+                chessFen.slice(fenIndex2End);
+              console.log(chessFen);
+              setFenState(chessFen);
+              chess.load(chessFen);
+              console.log(chess.in_check());
+              if (chess.in_check()) kingUnderAttack = true;
+
+              if (kingUnderAttack) {
+                chess.load(originChessFen);
+                setFenState(originChessFen);
+              }
+              if (!kingUnderAttack) {
+                // console.log(chessFenArray.indexOf());
+                // chessFenArray.splice(kingIndex - 2, 4, "2", "K", "R", "1");
+                // let startPlaceholderIndex;
+                let endPlaceholderIndex;
+                fenIndex2End = chess.fen().indexOf(" ");
+
+                chessFenArray = chessFen.split("");
+                chessFenArray.splice(fenIndex2End + 1, 1, "b");
+                chessFen = chessFenArray.join("");
+                for (let i = fenRow2.length - 1; i >= 0; i--) {
+                  if (fenRow2[i] === "K") {
+                    endPlaceholderIndex = i;
+                    console.log(endPlaceholderIndex);
+                    break;
+                  }
+                }
+
+                // for (let i = 0; i < fenRow2Compare.length; i++) {
+                //   if (fenRow2Compare[i] === "s") {
+                //     startPlaceholderIndex = i;
+                //     console.log(startPlaceholderIndex);
+                //     break;
+                //   }
+                // }
+                console.log(fenRow2);
+                console.log(endPlaceholderIndex);
+                fenRow2Compare =
+                  fenRow2Compare.slice(0, endPlaceholderIndex).join("") +
+                  "sRKs";
+                console.log(fenRow2Compare);
+                fenRow2Compare = fenRow2Compare.split("");
+
+                chessFen =
+                  chessFen.slice(0, fenIndex2Start) +
+                  fenRow2CompareArray.join("") +
+                  chessFen.slice(fenIndex2End);
+                fenRow2CompareArray = fenRow2Compare.slice();
+                transformPlaceholders();
+
+                chessFen =
+                  chessFen.slice(0, fenIndex2Start) +
+                  fenRow2CompareArray.join("") +
+                  chessFen.slice(fenIndex2End);
+                console.log(chessFen);
+                setFenState(chessFen);
+                chess.load(chessFen);
+
+                setSendCastlingFen(chessFen);
+              }
             }
           }, 100);
         }
+
         if (
           selectedPiece.current === "bK" &&
           to === "a8" &&
@@ -333,31 +820,209 @@ const Game = () => {
             console.log(parallelCastlingPositions.current);
             let newArray = parallelCastlingPositions.current.slice();
             console.log(newArray.length);
-            const parallelCastlingPositionsFlag =
-              parallelCastlingPositions.current.every((item, index) => {
-                if (index % 2 === 0) {
-                  if (item === "") {
-                    return item;
-                  }
-                }
-              });
-            parallelCastlingPositions.current.forEach((item, index) => {
-              if (index % 2 === 1) {
-                console.log(item);
-                if (playerColor === "w") {
-                  // chess.isAttacked(item);
-                }
-                if (playerColor === "b") {
-                }
+            let parallelCastlingPositionsFlag = false;
+            let counter = 0;
+            parallelCastlingPositions.current.forEach((item) => {
+              if (item === "") {
+                counter++;
+              }
+              console.log(counter);
+              if (counter === newArray.length) {
+                console.log("success");
+                parallelCastlingPositionsFlag = true;
               }
             });
-            console.log(parallelCastlingPositionsFlag);
 
-            if (parallelCastlingPositionsFlag) {
-              // execute castling
-            }
             if (newArray.length >= 1) {
-              parallelCastlingPositions.current = new Array();
+              parallelCastlingPositions.current = [];
+            }
+
+            if (parallelCastlingPositionsFlag === true) {
+              // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
+
+              // chess.remove("b1");
+
+              let kingUnderAttack = false;
+              let chessFen = chess.fen();
+              let originChessFen = chessFen;
+              console.log(chessFen);
+              const kingIndex = chessFen.indexOf("k");
+              console.log(kingIndex);
+              let chessFenArray = chessFen.split("");
+
+              let fenIndex1Start = 0;
+              let fenIndex1End;
+              function findRowEnd() {
+                chessFenArray = chessFen.split("");
+
+                for (let i = 0; i < chessFenArray.length; i++) {
+                  console.log(chessFenArray[i]);
+
+                  if (chessFenArray[i] === "/") {
+                    fenIndex1End = i;
+                    console.log(fenIndex1End);
+                    break;
+                  }
+                }
+              }
+
+              findRowEnd();
+              let fenRow1 = chess.fen().slice(fenIndex1Start, fenIndex1End);
+
+              let fenRow1Compare = chess
+                .fen()
+                .slice(fenIndex1Start, fenIndex1End)
+                .split("");
+
+              console.log(fenRow1);
+              console.log(fenIndex1End);
+
+              for (let i = 0; i < fenRow1.length; i++) {
+                console.log(fenRow1[i]);
+                //  loop over fenRow1 to remove any potential numbers and replace it with placeholders
+
+                if (isFinite(fenRow1[i])) {
+                  const stringToNumber = Number(fenRow1[i]);
+                  console.log(stringToNumber);
+                  let char = "";
+                  for (let x = 0; x < stringToNumber; x++) {
+                    char = char + "s";
+                  }
+
+                  console.log(typeof fenRow1Compare, fenRow1Compare);
+                  fenRow1Compare.splice(i, 1, char);
+
+                  console.log(typeof fenRow1Compare, fenRow1Compare);
+                }
+              }
+              fenRow1Compare = fenRow1Compare.join("");
+              fenRow1Compare = fenRow1Compare.split("");
+              fenRow1 = fenRow1Compare.slice();
+              console.log(fenRow1Compare);
+
+              let fenRow1CompareArray;
+              function alterKingPosition() {
+                for (let i = fenRow1.length - 1; i >= 0; i--) {
+                  if (
+                    fenRow1Compare[i] === "s" &&
+                    fenRow1Compare[i + 1] === "k"
+                  ) {
+                    console.log(fenRow1Compare[i], fenRow1Compare[i + 1]);
+                    fenRow1Compare.splice(i, 2, "k", "s");
+                    fenRow1CompareArray = fenRow1Compare.slice();
+                    console.log(typeof fenRow1Compare, fenRow1Compare);
+
+                    break;
+                  }
+                }
+              }
+              function transformPlaceholders() {
+                let sCounter = 0;
+                console.log(fenRow1, fenRow1Compare, fenRow1CompareArray);
+                for (let i = 0; i < fenRow1Compare.length; i++) {
+                  console.log(i, fenRow1CompareArray[i]);
+                  if (fenRow1CompareArray[i] === "s") {
+                    sCounter++;
+                    console.log(sCounter);
+                    console.log(fenRow1CompareArray, fenRow1CompareArray[i], i);
+                  }
+
+                  if (
+                    fenRow1CompareArray[i] === "s" &&
+                    fenRow1CompareArray[i + 1] !== "s"
+                  ) {
+                    console.log(sCounter);
+                    fenRow1CompareArray.splice(
+                      i - sCounter + 1,
+                      sCounter,
+                      sCounter
+                    );
+                    i = 0;
+                    sCounter = 0;
+                    console.log(fenRow1CompareArray);
+                  }
+                }
+              }
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+
+              alterKingPosition();
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+              transformPlaceholders();
+              findRowEnd();
+              console.log(chessFen);
+              chessFen =
+                fenRow1CompareArray.join("") + chessFen.slice(fenIndex1End);
+              console.log(chessFen);
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+
+              setFenState(chessFen);
+              chess.load(chessFen);
+              console.log(chess.in_check());
+              if (chess.in_check()) kingUnderAttack = true;
+
+              alterKingPosition();
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+              transformPlaceholders();
+              findRowEnd();
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+              console.log(chessFen);
+              console.log(fenIndex1End);
+              chessFen =
+                fenRow1CompareArray.join("") + chessFen.slice(fenIndex1End);
+              console.log(chessFen);
+
+              setFenState(chessFen);
+              chess.load(chessFen);
+              console.log(chess.in_check());
+              if (chess.in_check()) kingUnderAttack = true;
+
+              if (kingUnderAttack) {
+                chess.load(originChessFen);
+                setFenState(originChessFen);
+              }
+              if (!kingUnderAttack) {
+                // console.log(chessFenArray.indexOf());
+                // chessFenArray.splice(kingIndex - 2, 4, "2", "K", "R", "1");
+                // let startPlaceholderIndex;
+                let endPlaceholderIndex;
+
+                const turnIndex = chess.fen().indexOf(" ");
+                chessFenArray = chessFen.split("");
+                chessFenArray.splice(turnIndex + 1, 1, "w");
+                chessFen = chessFenArray.join("");
+                for (let i = fenRow1Compare.length - 1; i >= 0; i--) {
+                  if (fenRow1Compare[i] === "k") {
+                    endPlaceholderIndex = i + 2;
+                    console.log(endPlaceholderIndex);
+                    break;
+                  }
+                }
+
+                // for (let i = 0; i < fenRow1Compare.length; i++) {
+                //   if (fenRow1Compare[i] === "s") {
+                //     startPlaceholderIndex = i;
+                //     console.log(startPlaceholderIndex);
+                //     break;
+                //   }
+                // }
+                console.log(fenRow1Compare);
+                fenRow1Compare =
+                  "sskr" + fenRow1Compare.slice(endPlaceholderIndex).join("");
+                fenRow1Compare = fenRow1Compare.split("");
+                chessFen =
+                  fenRow1CompareArray.join("") + chessFen.slice(fenIndex1End);
+                fenRow1CompareArray = fenRow1Compare.slice();
+                console.log(fenRow1CompareArray);
+                transformPlaceholders();
+
+                chessFen =
+                  fenRow1CompareArray.join("") + chessFen.slice(fenIndex1End);
+                console.log(chessFen);
+                setFenState(chessFen);
+                chess.load(chessFen);
+
+                setSendCastlingFen(chessFen);
+              }
             }
           }, 100);
         }
@@ -376,30 +1041,212 @@ const Game = () => {
             console.log(parallelCastlingPositions.current);
             let newArray = parallelCastlingPositions.current.slice();
             console.log(newArray.length);
-            const parallelCastlingPositionsFlag =
-              parallelCastlingPositions.current.every((item, index) => {
-                if (index % 2 === 0) {
-                  if (item === "") {
-                    return item;
-                  }
-                }
-              });
-            parallelCastlingPositions.current.forEach((item, index) => {
-              if (index % 2 === 1) {
-                console.log(item);
-                if (playerColor === "w") {
-                  // chess.isAttacked(item);
-                }
-                if (playerColor === "b") {
-                }
+            let parallelCastlingPositionsFlag = false;
+            let counter = 0;
+            parallelCastlingPositions.current.forEach((item) => {
+              if (item === "") {
+                counter++;
+              }
+              console.log(counter);
+              if (counter === newArray.length) {
+                console.log("success");
+                parallelCastlingPositionsFlag = true;
               }
             });
-            console.log(parallelCastlingPositionsFlag);
-            if (parallelCastlingPositionsFlag) {
-              // execute castling
-            }
+
             if (newArray.length >= 1) {
-              parallelCastlingPositions.current = new Array();
+              parallelCastlingPositions.current = [];
+            }
+
+            if (parallelCastlingPositionsFlag === true) {
+              // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
+
+              // chess.remove("b1");
+
+              let kingUnderAttack = false;
+              let chessFen = chess.fen();
+              let originChessFen = chessFen;
+              console.log(chessFen);
+              const kingIndex = chessFen.indexOf("k");
+              console.log(kingIndex);
+              let chessFenArray = chessFen.split("");
+
+              let fenIndex1Start = 0;
+              let fenIndex1End;
+              function findRowEnd() {
+                chessFenArray = chessFen.split("");
+                for (let i = 0; i < chessFenArray.length; i++) {
+                  console.log(chessFenArray[i]);
+
+                  if (chessFenArray[i] === "/") {
+                    fenIndex1End = i;
+
+                    break;
+                  }
+                }
+              }
+              findRowEnd();
+              let fenRow1 = chess.fen().slice(fenIndex1Start, fenIndex1End);
+
+              let fenRow1Compare = chess
+                .fen()
+                .slice(fenIndex1Start, fenIndex1End)
+                .split("");
+
+              console.log(fenRow1);
+              console.log(fenIndex1End);
+
+              for (let i = 0; i < fenRow1.length; i++) {
+                console.log(fenRow1[i]);
+                //  loop over fenRow1 to remove any potential numbers and replace it with placeholders
+
+                if (isFinite(fenRow1[i])) {
+                  const stringToNumber = Number(fenRow1[i]);
+                  console.log(stringToNumber);
+                  let char = "";
+                  for (let x = 0; x < stringToNumber; x++) {
+                    char = char + "s";
+                  }
+
+                  console.log(typeof fenRow1Compare, fenRow1Compare);
+                  fenRow1Compare.splice(i, 1, char);
+
+                  console.log(typeof fenRow1Compare, fenRow1Compare);
+                }
+              }
+              fenRow1Compare = fenRow1Compare.join("");
+              fenRow1Compare = fenRow1Compare.split("");
+              fenRow1 = fenRow1Compare.slice();
+              console.log(fenRow1Compare);
+
+              let fenRow1CompareArray;
+              function alterKingPosition() {
+                for (let i = fenRow1.length - 1; i >= 0; i--) {
+                  if (
+                    fenRow1Compare[i] === "k" &&
+                    fenRow1Compare[i + 1] === "s"
+                  ) {
+                    console.log(fenRow1Compare[i], fenRow1Compare[i + 1]);
+                    fenRow1Compare.splice(i, 2, "s", "k");
+                    fenRow1CompareArray = fenRow1Compare.slice();
+                    console.log(typeof fenRow1Compare, fenRow1Compare);
+
+                    break;
+                  }
+                }
+              }
+              function transformPlaceholders() {
+                let sCounter = 0;
+                console.log(fenRow1, fenRow1Compare, fenRow1CompareArray);
+                for (let i = 0; i < fenRow1Compare.length; i++) {
+                  console.log(i, fenRow1CompareArray[i]);
+                  if (fenRow1CompareArray[i] === "s") {
+                    sCounter++;
+                    console.log(sCounter);
+                    console.log(fenRow1CompareArray, fenRow1CompareArray[i], i);
+                  }
+
+                  if (
+                    fenRow1CompareArray[i] === "s" &&
+                    fenRow1CompareArray[i + 1] !== "s"
+                  ) {
+                    console.log(sCounter);
+                    fenRow1CompareArray.splice(
+                      i - sCounter + 1,
+                      sCounter,
+                      sCounter
+                    );
+                    i = 0;
+                    sCounter = 0;
+                    console.log(fenRow1CompareArray);
+                  }
+                }
+              }
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+
+              alterKingPosition();
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+              transformPlaceholders();
+              findRowEnd();
+              console.log(chessFen);
+              chessFen =
+                fenRow1CompareArray.join("") + chessFen.slice(fenIndex1End);
+              console.log(chessFen);
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+
+              setFenState(chessFen);
+              chess.load(chessFen);
+              console.log(chess.in_check());
+              if (chess.in_check()) kingUnderAttack = true;
+
+              alterKingPosition();
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+              transformPlaceholders();
+              findRowEnd();
+
+              console.log(fenRow1Compare, fenRow1, fenRow1CompareArray);
+              console.log(chessFen);
+              chessFen =
+                fenRow1CompareArray.join("") + chessFen.slice(fenIndex1End);
+              console.log(chessFen);
+
+              setFenState(chessFen);
+              chess.load(chessFen);
+              console.log(chess.in_check());
+              if (chess.in_check()) kingUnderAttack = true;
+
+              if (kingUnderAttack) {
+                chess.load(originChessFen);
+                setFenState(originChessFen);
+              }
+              if (!kingUnderAttack) {
+                // console.log(chessFenArray.indexOf());
+                // chessFenArray.splice(kingIndex - 2, 4, "2", "K", "R", "1");
+                // let startPlaceholderIndex;
+                let endPlaceholderIndex;
+
+                const turnIndex = chess.fen().indexOf(" ");
+                chessFenArray = chessFen.split("");
+                chessFenArray.splice(turnIndex + 1, 1, "w");
+                chessFen = chessFenArray.join("");
+                for (let i = fenRow1Compare.length - 1; i >= 0; i--) {
+                  if (fenRow1Compare[i] === "k") {
+                    endPlaceholderIndex = i - 2;
+                    console.log(endPlaceholderIndex);
+                    break;
+                  }
+                }
+
+                // for (let i = 0; i < fenRow1Compare.length; i++) {
+                //   if (fenRow1Compare[i] === "s") {
+                //     startPlaceholderIndex = i;
+                //     console.log(startPlaceholderIndex);
+                //     break;
+                //   }
+                // }
+                console.log(fenRow1Compare);
+                console.log(fenIndex1End);
+                fenRow1Compare =
+                  fenRow1Compare.slice(0, endPlaceholderIndex).join("") +
+                  "srks";
+                console.log(fenRow1Compare);
+                fenRow1Compare = fenRow1Compare.split("");
+                console.log(chessFen);
+
+                fenRow1CompareArray = fenRow1Compare.slice();
+                console.log(chessFen);
+                console.log(fenRow1CompareArray);
+                transformPlaceholders();
+                findRowEnd();
+                console.log(fenRow1CompareArray);
+                chessFen =
+                  fenRow1CompareArray.join("") + chessFen.slice(fenIndex1End);
+                console.log(chessFen);
+                setFenState(chessFen);
+                chess.load(chessFen);
+
+                setSendCastlingFen(chessFen);
+              }
             }
           }, 100);
         }
@@ -668,7 +1515,6 @@ const Game = () => {
         disableFlag.current = true;
       }
 
-      // it is some how setting both setReceivedReloadState , opponentLeftState, and reloadState true when
       setTimeout(() => {
         window.location.reload(false);
       }, 2000);
@@ -682,7 +1528,9 @@ const Game = () => {
         "received from opponent reload state",
         receivedFromOpponentReloadState
       );
+      console.log(receivedFromOpponentReloadState);
       if (receivedFromOpponentReloadState === true) {
+        socket.emit("sendDisableFlag");
         dispatch(setReceivedReloadState(true));
 
         socket.emit("resetStates");
@@ -696,7 +1544,49 @@ const Game = () => {
       dispatch(setReloadState(false));
     });
   }, [dispatch]);
-
+  useEffect(() => {
+    socket.on("receiveDisableFlag", () => {
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      disableFlag.current = true;
+      setTimeout(() => {
+        disableFlag.current = false;
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+      }, 2800);
+    });
+  }, [dispatch]);
   useEffect(() => {
     console.log(player, playerColor);
     if (currentTurn === playerColor) {
@@ -745,12 +1635,29 @@ const Game = () => {
 
     socket.on("receivePromotionFlag", ({ receivedFenState }) => {
       console.log("receive promotion flag", receivedFenState);
-
       chess.load(receivedFenState);
       setFenState(receivedFenState);
     });
   }, [sendPromotionFlag]);
+  useEffect(() => {
+    if (sendCastlingFen !== undefined) {
+      socket.emit("sendCastle", { sentChessFen: sendCastlingFen });
+    }
 
+    socket.on("receiveCastle", ({ receiveChessFen }) => {
+      console.log(receiveChessFen);
+
+      if (outlineOne.current === true) {
+        outlineOne.current = false;
+        outlineTwo.current = true;
+      } else if (outlineTwo.current === true) {
+        outlineTwo.current = false;
+        outlineOne.current = true;
+      }
+      chess.load(receiveChessFen);
+      setFenState(receiveChessFen);
+    });
+  }, [dispatch, sendCastlingFen]);
   if (status === "opponentConcede" || status === "concede") {
     console.log(endGameFlag);
     return <GameEnd />;
@@ -771,6 +1678,10 @@ const Game = () => {
         If you would like to play the game with a friend. Simply share the
         homepage and ask them to create a username and type in the current game
         id.
+      </div>
+      <div className="castle-tip">
+        To castle ensure, that all castle rule conditions are met, and then
+        simply drag the king onto a rook you wish to castle with.
       </div>
       <div className="game-id-container">
         <p className="game-id-title">Game ID</p>

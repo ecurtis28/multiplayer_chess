@@ -61,7 +61,7 @@ const Cell = (props) => {
         console.log("b1 is activated");
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
 
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
@@ -71,7 +71,7 @@ const Cell = (props) => {
         console.log("c1 is activated");
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
         // });
@@ -80,7 +80,7 @@ const Cell = (props) => {
         console.log("d1 is activated");
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
         // });
@@ -91,7 +91,7 @@ const Cell = (props) => {
         console.log("f1 is activated");
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
         // });
@@ -100,7 +100,7 @@ const Cell = (props) => {
         console.log("g1 is activated");
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
 
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
@@ -112,7 +112,7 @@ const Cell = (props) => {
         console.log("b8 is activated");
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
         // });
@@ -122,7 +122,7 @@ const Cell = (props) => {
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
 
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
 
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
@@ -132,7 +132,7 @@ const Cell = (props) => {
         console.log("d8 is activated");
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
 
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
@@ -144,7 +144,7 @@ const Cell = (props) => {
         console.log("f8 is activated");
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
 
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
@@ -154,13 +154,13 @@ const Cell = (props) => {
         console.log("g8 is activated");
         console.log(cell.piece);
         console.log(parallelCastlingPositions.current.length);
-        parallelCastlingPositions.current.push(cell.piece, cell.pob);
+        parallelCastlingPositions.current.push(cell.piece)
         // setParallelCastlingPositions((prevState) => {
         //   return [...prevState, cell.piece];
         // });
       }
     }
-  }, [targetedCastlingPosition, cell.piece, cell.pob]);
+  }, [targetedCastlingPosition]);
   const handleDrop = () => {
     moveChessPiece(cell.pob, cell.piece);
     console.log(cell.pob);
