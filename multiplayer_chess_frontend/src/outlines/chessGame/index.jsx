@@ -88,6 +88,7 @@ const socket = io.connect(
 // It seems to happen only with the player who lost
 
 // When I concede or reconnect quickly sometimes there is an issue where a duplicate player that we do not control will join and stay in the room preventing real players from connecting
+// These ghost players seem to stay in the room indefinitely
 
 //  Previous chess.js version "chess.js": "^0.10.3",
 
