@@ -13,6 +13,8 @@ const GameEnd = () => {
   let winnerName;
 
   const statusPlaceholder = useRef("");
+  const winnerNamePlaceholder = useRef("");
+  const winnerPlaceholder = useRef("");
   statusPlaceholder.current = status;
   let winner;
   if (status === "checkmate") {
@@ -37,14 +39,24 @@ const GameEnd = () => {
     statusPlaceholder.current = "concede";
   }
   // concede logic
-  if (winner.charAt(0) === playerColor) {
-    winnerName = playerName;
-  }
-  if (winner.charAt(0) === opponentColor) {
-    winnerName = opponentName;
+  if (winner) {
+    if (winner.charAt(0) === playerColor) {
+      winnerName = playerName;
+    }
+    if (winner.charAt(0) === opponentColor) {
+      winnerName = opponentName;
+    }
   }
   // winner name render logic
 
+  console.log("testtesttesttest", winnerName, winner);
+  if (winnerName !== undefined) {
+    winnerNamePlaceholder.current = winnerName;
+  }
+  if (winner !== undefined) {
+    winnerPlaceholder.current = winner;
+  }
+  console.log(winnerNamePlaceholder, winnerPlaceholder);
   // Depending on status which is the game end condition, it will assign a winner and/or give the end game status
   const GameEndPage = () => {
     return (
@@ -58,7 +70,8 @@ const GameEnd = () => {
               </p>
               {winner && (
                 <p className="winner">
-                  <span>{`${winnerName} (${winner})`}</span> won
+                  <span>{`${winnerNamePlaceholder.current} (${winnerPlaceholder.current})`}</span>{" "}
+                  won
                 </p>
               )}
             </div>

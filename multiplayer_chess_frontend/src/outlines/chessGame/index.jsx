@@ -61,19 +61,19 @@ const socket = io.connect(
 // Whenever I rapidly refresh and error2 triggers (opponent is not available) it prevents the player from being able to reconnect when refreshing !
 // to fix this I should find a way to reload the page when error2 is triggered
 
-// Whenever I reload from white side and it reloads opponent if I move a piece it before opponent reloads it will not show on screen desyncing the game
+// Whenever I reload from white side and it reloads opponent if I move a piece it before opponent reloads it will not show on screen desyncing the game !
 
 // Whenever I try and castle while under attack if I attempt more than once it will fill the newArray with more than 2 strings which is a bug !
 // I think this is due to the fact that chess.load is used multiple times which triggers rerenders and thus the dependencies (cell.cpob, cell.piece) in useEffect from chessCell
 
 // I need to change the way I am setting up my castling check/execution logic
-// I know the solution I must try I must instead of using splice, I will use a for loop to find start and end index of top row and bottom row, I will then take that row, and use a for loop
+// I know the solution I must try I must instead of using splice, I will use a for loop to find start and end index of top row and bottom row, I will then take that row, and use a for loop !
 // to replace all numbers with the same amount of "s for space" placeholders. I will then shift the king to the direction where I am castling,If the is king is inCheck it will trigger a flag
-//   I will then repeat this again, for the next position until it reaches the position it would be in it's final castling position, if it passes through check (the flag is triggered)
+// I will then repeat this again, for the next position until it reaches the position it would be in it's final castling position, if it passes through check (the flag is triggered)
 // It will return  the piece to it's original position, other wise it will castle. For each king position change the fenRow will be calculated and rendered through the logic above
 // This is essentially what I did in user, and it is useful because it can be dynamic, and the FEN system is inherently dynamic with how empty spaces are represented (numbers)
 
-// Found a bug with the addition of the function check castling mechanism, if it attempts to try and move to a position with king and that position has enemy pieces covering all escapes
+// Found a bug with the addition of the function check castling mechanism, if it attempts to try and move to a position with king and that position has enemy pieces covering all escapes ?
 // it will instantly checkmate. To prevent this from happening, I need to create a flag that turns on when checking if king piece is going through check, and turns off after it is finished looking for castling checks
 // when this flag is triggered it will prevent the opponent from being able to checkmate you
 
@@ -83,7 +83,11 @@ const socket = io.connect(
 // The counter which is a number based on the amount of s placeholders at that certain character will then increase the delete count in splice to the amount of placeholders.
 // This will then shorten the last fen row which will make the final fen incompatiable with the chess.js library
 
-// Installing new chess.js library so I can get access to isAttacked function if it breaks everything revert to this version and try another solution "chess.js": "^0.10.3",
+// New bug, when I concede and the concede screen appears for both players. If one of the players presses play again button, it will return that player to homescreen, but the other player's screen will go white. !
+// Issue found, when a player leaves at gameEnd screen the winner/winnerName variable in gameEnd becomes undefined, which causes the name to go undefined
+// It seems to happen only with the player who lost
+
+//  Previous chess.js version "chess.js": "^0.10.3",
 
 // Features to add
 // Make an outline around player that is a different color when it is your turn !
@@ -99,10 +103,10 @@ const socket = io.connect(
 // const FEN = "rnbqk2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3KBNR w KQkq - 2 6";
 // const FEN = "r3k2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3K2R w KQkq - 2 6";
 
-const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+// const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 // the fen variable above represents the position of the chess pieces on the chess board
 // test checkmate
-// const FEN = "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3";
+const FEN = "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3";
 // test stalemate
 // const FEN = "4k3/4P3/4K3/8/8/8/8/8 b - - 0 78";
 // white wins fen state
@@ -132,7 +136,9 @@ const Game = () => {
   useEffect(() => {
     console.log(endGameFlag);
     if (!endGameFlag) {
-      gameIDBoxWidth.current = gameIDBoxReference.current.offsetWidth;
+      if (gameIDBoxReference.current) {
+        gameIDBoxWidth.current = gameIDBoxReference.current.offsetWidth;
+      }
     }
   }, [gameIDBoxReference.current]);
   const [fenState, setFenState] = useState(FEN); // represents the state of the fen variable above
@@ -163,6 +169,7 @@ const Game = () => {
   //   blackKing: false,
   // });
   const castlingLegal = useRef(true);
+  const disableCheckmate = useRef(false);
   const movedCastlingPieces = useRef({
     king: false,
     longRook: false,
@@ -286,7 +293,7 @@ const Game = () => {
               // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
 
               // chess.remove("b1");
-
+              disableCheckmate.current = true;
               let kingUnderAttack = false;
               let chessFen = chess.fen();
               let originChessFen = chessFen;
@@ -420,10 +427,7 @@ const Game = () => {
               console.log(chess.in_check());
               if (chess.in_check()) kingUnderAttack = true;
 
-              chess.load(chessFen);
-              setFenState(chessFen);
-              console.log(fenRow2Compare, fenRow2, fenRow2CompareArray);
-
+              disableCheckmate.current = false;
               if (kingUnderAttack) {
                 chess.load(originChessFen);
                 setFenState(originChessFen);
@@ -487,112 +491,6 @@ const Game = () => {
             setTargetedCastlingPosition(null);
           }, 300);
 
-          // setTimeout(() => {
-          //   console.log(parallelCastlingPositions.current);
-          //   let newArray = parallelCastlingPositions.current.slice();
-          //   console.log(newArray.length);
-          //   let parallelCastlingPositionsFlag = false;
-          //   let counter = 0;
-          //   parallelCastlingPositions.current.forEach((item) => {
-          //     if (item === "") {
-          //       counter++;
-          //     }
-          //     console.log(counter);
-          //     if (counter === newArray.length) {
-          //       console.log("success");
-          //       parallelCastlingPositionsFlag = true;
-          //     }
-          //   });
-
-          //   if (newArray.length >= 1) {
-          //     parallelCastlingPositions.current = [];
-          //   }
-
-          //   if (parallelCastlingPositionsFlag === true) {
-          //     // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
-
-          //     // chess.remove("b1");
-
-          //     let kingUnderAttack = false;
-          //     let chessFen = chess.fen();
-          //     let originChessFen = chessFen;
-          //     const index = chessFen.indexOf("K");
-          //     const chessFenArray = chessFen.split("");
-          //     function removeAdjacentNumbers() {
-          //       for (let i = 0; i < chessFenArray.length; i++) {
-          //         console.log(chessFenArray[i]);
-          //         if (isFinite(chessFenArray[i]) && chessFenArray[i] !== " ") {
-          //           console.log(
-          //             chessFenArray[i - 1],
-          //             isFinite(chessFenArray[i - 1]),
-          //             chessFenArray[i],
-          //             isFinite(chessFenArray[i]),
-          //             chessFenArray[i + 1],
-          //             isFinite(chessFenArray[i + 1])
-          //           );
-          //           if (
-          //             isFinite(chessFenArray[i - 1]) &&
-          //             chessFenArray[i - 1] !== " "
-          //           ) {
-          //             console.log(chessFenArray[i - 1]);
-          //             let combinedNumber =
-          //               Number(chessFenArray[i]) + Number(chessFenArray[i - 1]);
-          //             console.log(combinedNumber);
-          //             chessFenArray.splice(i - 1, 2, combinedNumber);
-          //           }
-          //           if (
-          //             isFinite(chessFenArray[i + 1]) &&
-          //             chessFenArray[i + 1] !== " "
-          //           ) {
-          //             console.log(chessFenArray[i + 1]);
-          //             let combinedNumber =
-          //               Number(chessFenArray[i]) + Number(chessFenArray[i + 1]);
-          //             console.log(combinedNumber);
-          //             chessFenArray.splice(i, 2, combinedNumber);
-          //           }
-          //         }
-          //       }
-          //     }
-          //     chessFenArray.splice(index, 2, "1", "K", "1");
-          //     chessFen = chessFenArray.join("");
-          //     console.log(chessFen);
-
-          //     chess.load(chessFen);
-          //     setFenState(chessFen);
-          //     console.log(chess.in_check());
-          //     console.log(newArray);
-          //     if (chess.in_check()) kingUnderAttack = true;
-
-          //     chessFenArray.splice(index, 3, "2", "K");
-          //     chessFen = chessFenArray.join("");
-          //     console.log(chessFen);
-
-          //     chess.load(chessFen);
-          //     setFenState(chessFen);
-          //     console.log(chess.in_check());
-          //     if (chess.in_check()) kingUnderAttack = true;
-
-          //     if (kingUnderAttack) {
-          //       chess.load(originChessFen);
-          //       setFenState(originChessFen);
-          //     }
-          //     if (!kingUnderAttack) {
-          //       chessFenArray.splice(index, 2, "1", "R", "K", "1");
-          //       let spaceIndex = chessFenArray.indexOf(" ");
-          //       console.log(spaceIndex);
-
-          //       chessFenArray.splice(spaceIndex + 1, 1, "b");
-
-          //       chessFen = chessFenArray.join("");
-          //       chess.load(chessFen);
-          //       setFenState(chessFen);
-
-          //       console.log(chessFen);
-          //       setSendCastlingFen(chessFen);
-          //     }
-          //   }
-          // }, 100);
-
           setTimeout(() => {
             console.log(parallelCastlingPositions.current);
             let newArray = parallelCastlingPositions.current.slice();
@@ -618,7 +516,7 @@ const Game = () => {
               // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
 
               // chess.remove("b1");
-
+              disableCheckmate.current = true;
               let kingUnderAttack = false;
               let chessFen = chess.fen();
               let originChessFen = chessFen;
@@ -749,7 +647,7 @@ const Game = () => {
               chess.load(chessFen);
               console.log(chess.in_check());
               if (chess.in_check()) kingUnderAttack = true;
-
+              disableCheckmate.current = false;
               if (kingUnderAttack) {
                 chess.load(originChessFen);
                 setFenState(originChessFen);
@@ -844,7 +742,7 @@ const Game = () => {
               // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
 
               // chess.remove("b1");
-
+              disableCheckmate.current = true;
               let kingUnderAttack = false;
               let chessFen = chess.fen();
               let originChessFen = chessFen;
@@ -978,7 +876,7 @@ const Game = () => {
               chess.load(chessFen);
               console.log(chess.in_check());
               if (chess.in_check()) kingUnderAttack = true;
-
+              disableCheckmate.current = false;
               if (kingUnderAttack) {
                 chess.load(originChessFen);
                 setFenState(originChessFen);
@@ -1065,7 +963,7 @@ const Game = () => {
               // chess.isAttacked doesn't seem to be present in my framework so I will have to make a custom isAttacked solution
 
               // chess.remove("b1");
-
+              disableCheckmate.current = true;
               let kingUnderAttack = false;
               let chessFen = chess.fen();
               let originChessFen = chessFen;
@@ -1197,7 +1095,7 @@ const Game = () => {
               chess.load(chessFen);
               console.log(chess.in_check());
               if (chess.in_check()) kingUnderAttack = true;
-
+              disableCheckmate.current = false;
               if (kingUnderAttack) {
                 chess.load(originChessFen);
                 setFenState(originChessFen);
@@ -1665,10 +1563,13 @@ const Game = () => {
     console.log(endGameFlag);
     return <GameEnd />;
   }
+
   if (endGame) {
-    console.log(endGameFlag);
-    return <GameEnd />;
-    // returns GameEnd page if endGame state is
+    if (disableCheckmate.current === false) {
+      console.log(endGameFlag);
+      return <GameEnd />;
+      // returns GameEnd page if endGame state is
+    }
   }
 
   return (
