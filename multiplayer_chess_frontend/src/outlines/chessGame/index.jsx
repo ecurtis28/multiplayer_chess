@@ -87,6 +87,10 @@ const socket = io.connect(
 // Issue found, when a player leaves at gameEnd screen the winner/winnerName variable in gameEnd becomes undefined, which causes the name to go undefined
 // It seems to happen only with the player who lost
 
+// When I concede or reconnect quickly sometimes there is an issue where a duplicate player that we do not control will join and stay in the room preventing real players from connecting
+
+
+
 //  Previous chess.js version "chess.js": "^0.10.3",
 
 // Features to add
