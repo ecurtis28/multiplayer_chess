@@ -101,9 +101,9 @@ const socket = io.connect(
 // test bug
 // const FEN = "r3kbnr/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/RNBQK2R w KQkq - 2 6";
 // const FEN = "rnbqk2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3KBNR w KQkq - 2 6";
-const FEN = "r3k2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3K2R w KQkq - 2 6";
+// const FEN = "r3k2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3K2R w KQkq - 2 6";
 
-// const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 // the fen variable above represents the position of the chess pieces on the chess board
 // test checkmate
 // const FEN = "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3";
