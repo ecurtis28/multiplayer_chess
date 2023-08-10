@@ -1450,45 +1450,12 @@ const Game = () => {
   }, [dispatch]);
   useEffect(() => {
     socket.on("receiveDisableFlag", () => {
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
-      console.log("test");
+   
       disableFlag.current = true;
       setTimeout(() => {
         disableFlag.current = false;
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
-      }, 2800);
+   
+      }, 3200);
     });
   }, [dispatch]);
   useEffect(() => {
