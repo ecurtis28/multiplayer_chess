@@ -89,8 +89,6 @@ const socket = io.connect(
 
 // When I concede or reconnect quickly sometimes there is an issue where a duplicate player that we do not control will join and stay in the room preventing real players from connecting
 
-
-
 //  Previous chess.js version "chess.js": "^0.10.3",
 
 // Features to add
