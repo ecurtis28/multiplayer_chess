@@ -150,7 +150,7 @@ io.on("connection", (socket) => {
     console.log("chessFen", sentChessFen);
     console.log("chessFen", sentChessFen);
     console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
+
     socket.broadcast
       .to(clientGameID)
       .emit("receiveCastle", { receiveChessFen: sentChessFen });

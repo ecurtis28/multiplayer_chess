@@ -1483,8 +1483,7 @@ const Game = () => {
         console.log("disable false");
         console.log("disable false");
         console.log("disable false");
-        console.log("disable false");
-        console.log("disable false");
+       
       }, 2700);
     });
   }, [dispatch]);
