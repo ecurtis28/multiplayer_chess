@@ -11,9 +11,8 @@ console.log("testtesttest");
 console.log(port);
 const server = http.createServer(app);
 const io = new Server(server, {
-  // https://multiplayer-chess-site.onrender.com
   cors: {
-    origins: `https://multiplayer-chess-site.onrender.com`,
+    origins: `http://localhost:3000`,
 
     // location of frontend (need to somehow specify port to render so that this code works)
     // I might be able just pass the render site link
@@ -121,7 +120,7 @@ io.on("connection", (socket) => {
   socket.on("resetStates", () => {
     setTimeout(() => {
       socket.emit("resetStatesReceive");
-    }, 2000);
+    }, 3000);
   });
   // resets all reloadstates we defined in chessGame
 
@@ -129,9 +128,11 @@ io.on("connection", (socket) => {
     //  io.in(socketId).emit(/* ... */);
     setTimeout(() => {
       if (globalPlayer.name === previouslyLeftPlayer1) {
+        console.log(clientGameID);
         io.to(globalPlayer.playerID).emit("receiveDisableFlag");
       }
       if (globalPlayer.name === previouslyLeftPlayer2) {
+        console.log(clientGameID);
         io.to(globalPlayer.playerID).emit("receiveDisableFlag");
       }
     }, 98);

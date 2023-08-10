@@ -29,15 +29,12 @@ import {
   setOpponentLeftState,
   setStatus,
 } from "../../context/action.js";
-// "https://multiplayer-chess-site-backend.onrender.com"
-const socket = io.connect(
-  "https://multiplayer-chess-site-backend.onrender.com",
-  {
-    reconnection: true,
-    reconnectionDelay: 500,
-    reconnectionAttempts: 100,
-  }
-);
+
+const socket = io.connect("http://localhost:3001", {
+  reconnection: true,
+  reconnectionDelay: 500,
+  reconnectionAttempts: 100,
+});
 
 // Known Bugs ! at top right of description = bug fixed/feature added
 // Whenever you put down piece it suddenly triggers a message "Your Move" for opponent even if you didn't move the piece but simply picked it up !
@@ -1309,7 +1306,7 @@ const Game = () => {
           if (error2) {
             setTimeout(() => {
               window.location.reload(false);
-            }, 1500);
+            }, 2000);
           }
           console.log({ color });
 
@@ -1450,10 +1447,45 @@ const Game = () => {
   }, [dispatch]);
   useEffect(() => {
     socket.on("receiveDisableFlag", () => {
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
+      console.log("test");
       disableFlag.current = true;
       setTimeout(() => {
         disableFlag.current = false;
-      }, 2500);
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+        console.log("disable false");
+      }, 2700);
     });
   }, [dispatch]);
   useEffect(() => {
