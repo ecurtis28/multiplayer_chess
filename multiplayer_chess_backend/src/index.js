@@ -12,7 +12,7 @@ console.log(port);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origins: `https://multiplayer-chess-site.onrender.com`,
+    origins: `http://localhost:3000`,
 
     // location of frontend (need to somehow specify port to render so that this code works)
     // I might be able just pass the render site link

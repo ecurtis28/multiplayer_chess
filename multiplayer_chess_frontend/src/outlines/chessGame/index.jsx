@@ -30,14 +30,11 @@ import {
   setStatus,
 } from "../../context/action.js";
 
-const socket = io.connect(
-  "https://multiplayer-chess-site-backend.onrender.com",
-  {
-    reconnection: true,
-    reconnectionDelay: 500,
-    reconnectionAttempts: 100,
-  }
-);
+const socket = io.connect("http://localhost:3001", {
+  reconnection: true,
+  reconnectionDelay: 500,
+  reconnectionAttempts: 100,
+});
 
 // Known Bugs ! at top right of description = bug fixed/feature added
 // Whenever you put down piece it suddenly triggers a message "Your Move" for opponent even if you didn't move the piece but simply picked it up !
@@ -87,8 +84,7 @@ const socket = io.connect(
 // Issue found, when a player leaves at gameEnd screen the winner/winnerName variable in gameEnd becomes undefined, which causes the name to go undefined
 // It seems to happen only with the player who lost
 
-// When I concede or reconnect quickly sometimes there is an issue where a duplicate player that we do not control will join and stay in the room preventing real players from connecting
-// These ghost players seem to stay in the room indefinitely
+
 
 //  Previous chess.js version "chess.js": "^0.10.3",
 
@@ -104,9 +100,9 @@ const socket = io.connect(
 // test bug
 // const FEN = "r3kbnr/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/RNBQK2R w KQkq - 2 6";
 // const FEN = "rnbqk2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3KBNR w KQkq - 2 6";
-// const FEN = "r3k2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3K2R w KQkq - 2 6";
+const FEN = "r3k2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3K2R w KQkq - 2 6";
 
-const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+// const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 // the fen variable above represents the position of the chess pieces on the chess board
 // test checkmate
 // const FEN = "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3";
@@ -432,8 +428,8 @@ const Game = () => {
 
               disableCheckmate.current = false;
               if (kingUnderAttack) {
-                chess.load(originChessFen);
                 setFenState(originChessFen);
+                chess.load(originChessFen);
               }
               if (!kingUnderAttack) {
                 // console.log(chessFenArray.indexOf());
@@ -918,13 +914,13 @@ const Game = () => {
                 fenRow1CompareArray = fenRow1Compare.slice();
                 console.log(fenRow1CompareArray);
                 transformPlaceholders();
-
+                findRowEnd();
                 chessFen =
                   fenRow1CompareArray.join("") + chessFen.slice(fenIndex1End);
                 console.log(chessFen);
                 setFenState(chessFen);
                 chess.load(chessFen);
-
+                console.log(chessFen);
                 setSendCastlingFen(chessFen);
               }
             }
@@ -1542,13 +1538,15 @@ const Game = () => {
     });
   }, [sendPromotionFlag]);
   useEffect(() => {
+    console.log(sendCastlingFen);
     if (sendCastlingFen !== undefined) {
       socket.emit("sendCastle", { sentChessFen: sendCastlingFen });
     }
 
     socket.on("receiveCastle", ({ receiveChessFen }) => {
       console.log(receiveChessFen);
-
+      chess.load(receiveChessFen);
+      setFenState(receiveChessFen);
       if (outlineOne.current === true) {
         outlineOne.current = false;
         outlineTwo.current = true;
@@ -1556,8 +1554,6 @@ const Game = () => {
         outlineTwo.current = false;
         outlineOne.current = true;
       }
-      chess.load(receiveChessFen);
-      setFenState(receiveChessFen);
     });
   }, [dispatch, sendCastlingFen]);
   if (status === "opponentConcede" || status === "concede") {
