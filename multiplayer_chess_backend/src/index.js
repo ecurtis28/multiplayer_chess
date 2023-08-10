@@ -11,6 +11,7 @@ console.log("testtesttest");
 console.log(port);
 const server = http.createServer(app);
 const io = new Server(server, {
+  // https://multiplayer-chess-site.onrender.com
   cors: {
     origins: `https://multiplayer-chess-site.onrender.com`,
 
@@ -49,13 +50,11 @@ io.on("connection", (socket) => {
     if (initialLoad1 === false) {
       previouslyLeftPlayer1 = player.name;
       initialLoad1 = true;
-
     }
     if (initialLoad2 === false) {
       if (player.name !== previouslyLeftPlayer1) {
         previouslyLeftPlayer2 = player.name;
         initialLoad2 = true;
-  
       }
     }
     // name gameID and the newly created playerID (which references socket.id) arguments are passed to addPlayer function in game.js
@@ -122,22 +121,17 @@ io.on("connection", (socket) => {
   socket.on("resetStates", () => {
     setTimeout(() => {
       socket.emit("resetStatesReceive");
-    }, 3500);
+    }, 2000);
   });
   // resets all reloadstates we defined in chessGame
 
   socket.on("sendDisableFlag", () => {
     //  io.in(socketId).emit(/* ... */);
     setTimeout(() => {
-  
       if (globalPlayer.name === previouslyLeftPlayer1) {
-       
-
         io.to(globalPlayer.playerID).emit("receiveDisableFlag");
       }
       if (globalPlayer.name === previouslyLeftPlayer2) {
-   
-    
         io.to(globalPlayer.playerID).emit("receiveDisableFlag");
       }
     }, 98);

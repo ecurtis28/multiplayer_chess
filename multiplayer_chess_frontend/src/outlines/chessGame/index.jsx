@@ -29,7 +29,7 @@ import {
   setOpponentLeftState,
   setStatus,
 } from "../../context/action.js";
-
+// "https://multiplayer-chess-site-backend.onrender.com"
 const socket = io.connect(
   "https://multiplayer-chess-site-backend.onrender.com",
   {
@@ -1309,7 +1309,7 @@ const Game = () => {
           if (error2) {
             setTimeout(() => {
               window.location.reload(false);
-            }, 2000);
+            }, 1500);
           }
           console.log({ color });
 
@@ -1421,7 +1421,7 @@ const Game = () => {
 
       setTimeout(() => {
         window.location.reload(false);
-      }, 2000);
+      }, 1500);
 
       // socket.emit('reinitializeReloadModeBackend')
     }
@@ -1450,12 +1450,10 @@ const Game = () => {
   }, [dispatch]);
   useEffect(() => {
     socket.on("receiveDisableFlag", () => {
-   
       disableFlag.current = true;
       setTimeout(() => {
         disableFlag.current = false;
-   
-      }, 3200);
+      }, 2500);
     });
   }, [dispatch]);
   useEffect(() => {
