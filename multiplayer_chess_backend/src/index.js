@@ -10,7 +10,6 @@ app.use(cors());
 console.log("testtesttest");
 console.log(port);
 const server = http.createServer(app);
-
 const io = new Server(server, {
   cors: {
     origins: `https://multiplayer-chess-site.onrender.com`,
@@ -50,49 +49,13 @@ io.on("connection", (socket) => {
     if (initialLoad1 === false) {
       previouslyLeftPlayer1 = player.name;
       initialLoad1 = true;
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
-      console.log("previously load player 1", previouslyLeftPlayer1);
+
     }
     if (initialLoad2 === false) {
       if (player.name !== previouslyLeftPlayer1) {
         previouslyLeftPlayer2 = player.name;
         initialLoad2 = true;
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
-        console.log("previously load player 2", previouslyLeftPlayer2);
+  
       }
     }
     // name gameID and the newly created playerID (which references socket.id) arguments are passed to addPlayer function in game.js
@@ -166,105 +129,15 @@ io.on("connection", (socket) => {
   socket.on("sendDisableFlag", () => {
     //  io.in(socketId).emit(/* ... */);
     setTimeout(() => {
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
-      console.log("global player name", globalPlayer.name);
+  
       if (globalPlayer.name === previouslyLeftPlayer1) {
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer1", globalPlayer.playerID);
-        console.log(clientGameID);
+       
+
         io.to(globalPlayer.playerID).emit("receiveDisableFlag");
       }
       if (globalPlayer.name === previouslyLeftPlayer2) {
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log("receivedPreviouslyPlayer2", globalPlayer.playerID);
-        console.log(clientGameID);
+   
+    
         io.to(globalPlayer.playerID).emit("receiveDisableFlag");
       }
     }, 98);
