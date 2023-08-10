@@ -30,11 +30,14 @@ import {
   setStatus,
 } from "../../context/action.js";
 
-const socket = io.connect("http://localhost:3001", {
-  reconnection: true,
-  reconnectionDelay: 500,
-  reconnectionAttempts: 100,
-});
+const socket = io.connect(
+  "https://multiplayer-chess-site-backend.onrender.com",
+  {
+    reconnection: true,
+    reconnectionDelay: 500,
+    reconnectionAttempts: 100,
+  }
+);
 
 // Known Bugs ! at top right of description = bug fixed/feature added
 // Whenever you put down piece it suddenly triggers a message "Your Move" for opponent even if you didn't move the piece but simply picked it up !
@@ -83,8 +86,6 @@ const socket = io.connect("http://localhost:3001", {
 // New bug, when I concede and the concede screen appears for both players. If one of the players presses play again button, it will return that player to homescreen, but the other player's screen will go white. !
 // Issue found, when a player leaves at gameEnd screen the winner/winnerName variable in gameEnd becomes undefined, which causes the name to go undefined
 // It seems to happen only with the player who lost
-
-
 
 //  Previous chess.js version "chess.js": "^0.10.3",
 
