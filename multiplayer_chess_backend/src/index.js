@@ -11,6 +11,8 @@ console.log("testtesttest");
 console.log(port);
 const server = http.createServer(app);
 const io = new Server(server, {
+  // http://localhost:3000
+  // `https://multiplayer-chess-site.onrender.com`
   cors: {
     origins: `https://multiplayer-chess-site.onrender.com`,
 
@@ -44,16 +46,17 @@ io.on("connection", (socket) => {
       playerID: socket.id,
       gameID,
     });
-
-    globalPlayer = player;
-    if (initialLoad1 === false) {
-      previouslyLeftPlayer1 = player.name;
-      initialLoad1 = true;
-    }
-    if (initialLoad2 === false) {
-      if (player.name !== previouslyLeftPlayer1) {
-        previouslyLeftPlayer2 = player.name;
-        initialLoad2 = true;
+    if (player) {
+      globalPlayer = player;
+      if (initialLoad1 === false) {
+        previouslyLeftPlayer1 = player.name;
+        initialLoad1 = true;
+      }
+      if (initialLoad2 === false) {
+        if (player.name !== previouslyLeftPlayer1) {
+          previouslyLeftPlayer2 = player.name;
+          initialLoad2 = true;
+        }
       }
     }
     // name gameID and the newly created playerID (which references socket.id) arguments are passed to addPlayer function in game.js

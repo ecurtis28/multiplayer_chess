@@ -20,7 +20,6 @@ const HomeForm = () => {
 
   useEffect(() => {
     if (linkID) {
-      console.log(location, linkID);
       return dispatch(setChessGameID(linkID));
     }
     // using queryString we determine if a specific part of the link exists (linkID)
@@ -69,8 +68,10 @@ const HomeForm = () => {
           // player name input
         />
         <input
+          maxLength={20}
           onChange={({ target }) => {
             dispatch(setChessGameID(target.value));
+
             setCustomGameIDFlag(true);
             // input for customGameID manipulation by client
           }}
@@ -82,6 +83,11 @@ const HomeForm = () => {
         <hr />
 
         <Button>Create</Button>
+
+        <h3 className="redirection-note">
+          You will be redirected to this page if the Game ID selected is already
+          full.
+        </h3>
       </form>
     </div>
   );

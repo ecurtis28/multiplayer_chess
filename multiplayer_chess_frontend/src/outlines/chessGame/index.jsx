@@ -29,7 +29,8 @@ import {
   setOpponentLeftState,
   setStatus,
 } from "../../context/action.js";
-
+// "http://localhost:3001"
+//   "https://multiplayer-chess-site-backend.onrender.com"
 const socket = io.connect(
   "https://multiplayer-chess-site-backend.onrender.com",
   {
@@ -87,6 +88,10 @@ const socket = io.connect(
 // Issue found, when a player leaves at gameEnd screen the winner/winnerName variable in gameEnd becomes undefined, which causes the name to go undefined
 // It seems to happen only with the player who lost
 
+// When you concede alone it there is a possibility it will duplicate the player and take up space as an opponent !
+
+// When it is reloaded if you concede before opponent reloads it will send one player to end game screen but the other opponent will be directed to game
+
 //  Previous chess.js version "chess.js": "^0.10.3",
 
 // Features to add
@@ -98,6 +103,7 @@ const socket = io.connect(
 // When I put my pawn at the opponents beginning row I should be able to get any piece I want  (pawn promotion) (check how the legal chess rule works), but it doesn't work. I need to add this as a feature. !
 // I should be able to castle but my chess game currently doesn't allow it (check how castling works in a legal chess game). Add this functionality.
 // Add a tab icon and name (besides react app and react icon) !
+
 // test bug
 // const FEN = "r3kbnr/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/RNBQK2R w KQkq - 2 6";
 // const FEN = "rnbqk2r/pp2pppp/nq1pb3/2p5/N2P4/1P6/P1P1PPPP/R3KBNR w KQkq - 2 6";
@@ -160,14 +166,7 @@ const Game = () => {
 
   const [sendPromotionFlag, setSendPromotionFlag] = useState(false);
   const [sendCastlingFen, setSendCastlingFen] = useState();
-  // const movedCastlingPieces = useRef({
-  //   h8BlackRook: false,
-  //   a8BlackRook: false,
-  //   h1WhiteRook: false,
-  //   a1WhiteRook: false,
-  //   whiteKing: false,
-  //   blackKing: false,
-  // });
+
   const castlingLegal = useRef(true);
   const disableCheckmate = useRef(false);
   const movedCastlingPieces = useRef({
@@ -203,7 +202,9 @@ const Game = () => {
   const chessGameIDRef = useRef("");
   const pauseGame = useRef(false);
   const disableFlag = useRef(false);
+  const concedeDisabled = useRef(true);
   const parallelCastlingPositions = useRef([]);
+
   const [targetedCastlingPosition, setTargetedCastlingPosition] =
     useState(null);
 
@@ -1283,10 +1284,19 @@ const Game = () => {
   // the other two dependencies are there because it's best practice to include externally declared variables
 
   useEffect(() => {
-    const { id, name } = querystring.parse(location.search);
+    let { id, name } = querystring.parse(location.search);
+    console.log(location.path);
+
     console.log(id, name);
+    if (id.length > 20) {
+      id = id.slice(0, 20);
+    }
     playerName.current = name;
+
     chessGameIDRef.current = id;
+    if (id && name) {
+      history.push(`/game?name=${name}&id=${id}`);
+    }
   }, [location.search]);
 
   useEffect(() => {
@@ -1365,6 +1375,7 @@ const Game = () => {
       socket.on("opponentLeft", () => {
         dispatch(setOpponent(""));
         console.log(receivedReloadState, opponentLeftState);
+
         if (receivedReloadState === false) {
           dispatch(setOpponentLeftState(true));
         }
@@ -1410,6 +1421,7 @@ const Game = () => {
 
   useEffect(() => {
     if (reloadState === true) {
+      concedeDisabled.current = true;
       socket.emit("sendReloadState", { backendReloadState: reloadState });
       if (playerColor === "w") {
         console.log("playercolor", playerColor);
@@ -1429,6 +1441,70 @@ const Game = () => {
         "received from opponent reload state",
         receivedFromOpponentReloadState
       );
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
+      console.log(
+        "received from opponent reload state",
+        receivedFromOpponentReloadState
+      );
+
       console.log(receivedFromOpponentReloadState);
       if (receivedFromOpponentReloadState === true) {
         socket.emit("sendDisableFlag");
@@ -1447,6 +1523,7 @@ const Game = () => {
   }, [dispatch]);
   useEffect(() => {
     socket.on("receiveDisableFlag", () => {
+      concedeDisabled.current = true;
       console.log("test");
       console.log("test");
       console.log("test");
@@ -1557,6 +1634,16 @@ const Game = () => {
       }
     });
   }, [dispatch, sendCastlingFen]);
+
+  useEffect(() => {
+    console.log(opponentName);
+    if (opponentName === undefined && opponentName === "") {
+      concedeDisabled.current = true;
+    }
+    if (opponentName !== undefined && opponentName !== "") {
+      concedeDisabled.current = false;
+    }
+  }, [opponentName]);
   if (status === "opponentConcede" || status === "concede") {
     console.log(endGameFlag);
     return <GameEnd />;
@@ -1628,7 +1715,11 @@ const Game = () => {
         parallelCastlingPositions={parallelCastlingPositions}
         targetedCastlingPosition={targetedCastlingPosition}
       />
-      <ButtonContainer setEndGameFlag={setEndGameFlag} chess={chess} />
+      <ButtonContainer
+        concedeDisabled={concedeDisabled}
+        setEndGameFlag={setEndGameFlag}
+        chess={chess}
+      />
 
       <MessageWindow />
     </div>
