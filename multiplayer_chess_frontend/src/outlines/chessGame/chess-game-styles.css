@@ -1,5 +1,12 @@
+html,
+body {
+  margin: 0;
+  height: 1200px;
+}
+
 .game {
-  height: 1006px;
+  margin: 0;
+  height: 1200px;
   background-image: url(../../assets/game-background.jpg);
   background-size: cover;
 }
@@ -66,4 +73,14 @@
   font-family: "Crimson Text";
 
   color: #834132;
+}
+
+@media screen and (max-height: 730px) {
+  .game {
+    height: 1400px;
+  }
+  html,
+  body {
+    height: 1400px;
+  }
 }
