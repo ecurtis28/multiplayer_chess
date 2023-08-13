@@ -1,7 +1,6 @@
 html,
 body {
   margin: 0;
-  height: 1200px;
 }
 
 .game {
@@ -77,10 +76,6 @@ body {
 
 @media screen and (max-height: 730px) {
   .game {
-    height: 1400px;
-  }
-  html,
-  body {
     height: 1400px;
   }
 }
