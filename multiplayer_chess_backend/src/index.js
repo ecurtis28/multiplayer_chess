@@ -14,7 +14,7 @@ const io = new Server(server, {
   // http://localhost:3000
   // `https://multiplayer-chess-site.onrender.com`
   cors: {
-    origins: `https://multiplayer-chess-site.onrender.com`,
+    origins: `http://localhost:3000`,
 
     // location of frontend (need to somehow specify port to render so that this code works)
     // I might be able just pass the render site link
@@ -143,17 +143,6 @@ io.on("connection", (socket) => {
   //  rec
 
   socket.on("sendCastle", ({ sentChessFen }) => {
-    console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
-    console.log("chessFen", sentChessFen);
-
     socket.broadcast
       .to(clientGameID)
       .emit("receiveCastle", { receiveChessFen: sentChessFen });
