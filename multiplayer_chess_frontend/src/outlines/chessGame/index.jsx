@@ -1563,17 +1563,17 @@ const Game = () => {
       }, 2700);
     });
   }, [dispatch]);
-  useEffect(() => {
-    console.log(player, playerColor);
-    if (currentTurn === playerColor) {
-      console.log("outline true");
-      outlineOne.current = true;
-      outlineTwo.current = false;
-    } else {
-      outlineOne.current = false;
-      outlineTwo.current = true;
-    }
-  }, [player, playerColor, currentTurn]);
+  // useEffect(() => {
+  //   console.log(player, playerColor);
+  //   if (currentTurn === playerColor) {
+  //     console.log("outline true");
+  //     outlineOne.current = true;
+  //     outlineTwo.current = false;
+  //   } else {
+  //     outlineOne.current = false;
+  //     outlineTwo.current = true;
+  //   }
+  // }, [player, playerColor, currentTurn]);
 
   useEffect(() => {
     console.log(status);
