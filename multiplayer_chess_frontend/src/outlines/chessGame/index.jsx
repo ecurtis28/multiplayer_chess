@@ -31,7 +31,7 @@ import {
 } from "../../context/action.js";
 // "http://localhost:3001"
 //   "https://multiplayer-chess-site-backend.onrender.com"
-const socket = io.connect("http://localhost:3001", {
+const socket = io.connect("https://multiplayer-chess-site-backend.onrender.com", {
   reconnection: true,
   reconnectionDelay: 500,
   reconnectionAttempts: 100,
