@@ -164,9 +164,6 @@ io.on("connection", (socket) => {
     // emits the opponentMove event and from and to variable to the opponent
   });
 
-  setInterval(function () {
-    io.in(clientGameID).emit("preventTimeout");
-  }, 100000);
 
   socket.on("sendPromotionFlag", ({ fenState }) => {
     console.log(fenState);

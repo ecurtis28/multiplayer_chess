@@ -1330,10 +1330,7 @@ const Game = () => {
           console.log(chess.turn());
         }
       );
-      socket.on("preventTimeout", () => {
-        console.log("Refreshing");
-        setFenState(chess.fen());
-      });
+
       socket.on("welcome", ({ message, opponent }) => {
         //listens for welcome event from backend
         console.log({ message, opponent });
@@ -1675,7 +1672,7 @@ const Game = () => {
       <div className="link-tip">
         If you would like to play the game with a friend. Simply share the
         homepage and ask them to create a username and type in the current game
-        id.
+        id. You can also open another tab to play against yourself.
       </div>
       <div className="castle-tip">
         To castle ensure, that all castle rule conditions are met, and then
