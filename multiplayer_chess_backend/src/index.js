@@ -37,10 +37,7 @@ io.on("connection", (socket) => {
   let clientGameID = null;
 
   socket.on("join", ({ name, gameID }, callback) => {
-    setInterval(function () {
-      timeInterval = timeInterval + 10000;
-      console.log("time", timeInterval);
-    }, 10000);
+   
     // listens for join event emitted by client
     // name and gameID passed by client and destructured here into variables
 
