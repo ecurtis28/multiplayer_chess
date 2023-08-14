@@ -31,14 +31,11 @@ import {
 } from "../../context/action.js";
 // "http://localhost:3001"
 //   "https://multiplayer-chess-site-backend.onrender.com"
-const socket = io.connect(
-  "https://multiplayer-chess-site-backend.onrender.com",
-  {
-    reconnection: true,
-    reconnectionDelay: 500,
-    reconnectionAttempts: 100,
-  }
-);
+const socket = io.connect("http://localhost:3001", {
+  reconnection: true,
+  reconnectionDelay: 500,
+  reconnectionAttempts: 100,
+});
 
 // Known Bugs ! at top right of description = bug fixed/feature added
 // Whenever you put down piece it suddenly triggers a message "Your Move" for opponent even if you didn't move the piece but simply picked it up !
@@ -1330,7 +1327,10 @@ const Game = () => {
           console.log(chess.turn());
         }
       );
-
+      socket.on("preventTimeout", () => {
+        console.log("Refreshing");
+        setFenState(chess.fen());
+      });
       socket.on("welcome", ({ message, opponent }) => {
         //listens for welcome event from backend
         console.log({ message, opponent });
