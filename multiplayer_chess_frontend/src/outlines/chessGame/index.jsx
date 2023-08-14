@@ -31,7 +31,7 @@ import {
 } from "../../context/action.js";
 // "http://localhost:3001"
 //   "https://multiplayer-chess-site-backend.onrender.com"
-const socket = io.connect("https://multiplayer-chess-site-backend.onrender.com", {
+const socket = io.connect("http://localhost:3001", {
   reconnection: true,
   reconnectionDelay: 500,
   reconnectionAttempts: 100,
@@ -87,7 +87,11 @@ const socket = io.connect("https://multiplayer-chess-site-backend.onrender.com",
 
 // When you concede alone it there is a possibility it will duplicate the player and take up space as an opponent !
 
-// When it is reloaded if you concede before opponent reloads it will send one player to end game screen but the other opponent will be directed to game
+// When it is reloaded if you concede before opponent reloads it will send one player to end game screen but the other opponent will be directed to game !
+
+// There is an additional bug, in which if you leave the game afk for a while the players seem to desync despite showing that they are both in the game
+// Solution: Need to increase the time it takes to dc in socket.io, and also when it does disconnect it needs to emit an event that will return the users
+// to homepage
 
 //  Previous chess.js version "chess.js": "^0.10.3",
 

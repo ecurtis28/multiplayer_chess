@@ -14,7 +14,7 @@ const io = new Server(server, {
   // http://localhost:3000
   // `https://multiplayer-chess-site.onrender.com`
   cors: {
-    origins: `https://multiplayer-chess-site.onrender.com`,
+    origins: `http://localhost:3000`,
 
     // location of frontend (need to somehow specify port to render so that this code works)
     // I might be able just pass the render site link
@@ -22,8 +22,9 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
   pingInterval: 5000,
+  pingTimeout: 3600000,
 });
-
+let timeInterval = 0;
 let globalPlayer = null;
 let initialLoad1 = false;
 let initialLoad2 = false;
@@ -35,6 +36,10 @@ io.on("connection", (socket) => {
   let clientGameID = null;
 
   socket.on("join", ({ name, gameID }, callback) => {
+    setInterval(function () {
+      timeInterval = timeInterval + 10000;
+      console.log(timeInterval);
+    }, 10000);
     // listens for join event emitted by client
     // name and gameID passed by client and destructured here into variables
 
@@ -180,7 +185,8 @@ io.on("connection", (socket) => {
     const player = removePlayer(socket.id);
     // use removePlayer() function in game.js to remove the player that disconnected from game/players array in games object
     // return the removed player and assign it to the player variable
-
+    timeInterval = 0;
+    console.log("disconnect");
     if (player) {
       // if player exists
       io.to(player.gameID).emit("message", {
