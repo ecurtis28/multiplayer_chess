@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import "./user-styles.css";
 
-const User = ({
+const User1 = ({
   name,
   color,
   player,
@@ -13,10 +13,58 @@ const User = ({
   setEndPauseGame,
   setFenState,
   setSendPromotionFlag,
+  currentTurn,
 }) => {
   const white = color === "w";
   const image = white ? "wK" : "bK";
   // top right/left player identifier components
+
+  console.log(promotionConfirmationFlag);
+  console.log(promotionConfirmationFlag);
+  console.log(promotionConfirmationFlag);
+  console.log(promotionConfirmationFlag);
+  console.log(promotionConfirmationFlag);
+  console.log(promotionConfirmationFlag);
+
+  const playerPromoted = useRef(false);
+  let singleInstancePlayerPromotedFlag = useRef(false);
+
+  useEffect(() => {
+    if (
+      promotionConfirmationFlag === true &&
+      singleInstancePlayerPromotedFlag.current === false
+    ) {
+      if (currentTurn === color) {
+        playerPromoted.current = true;
+        singleInstancePlayerPromotedFlag.current = true;
+      }
+    }
+
+    console.log(
+      "playerPromoted",
+      playerPromoted.current,
+      "singleInstancePlayerPromotedFlag",
+      singleInstancePlayerPromotedFlag.current,
+      "promotionConfirmationFlag",
+      promotionConfirmationFlag
+    );
+    console.log(
+      "playerPromoted",
+      playerPromoted.current,
+      "singleInstancePlayerPromotedFlag",
+      singleInstancePlayerPromotedFlag.current,
+      "promotionConfirmationFlag",
+      promotionConfirmationFlag
+    );
+    console.log(
+      "playerPromoted",
+      playerPromoted.current,
+      "singleInstancePlayerPromotedFlag",
+      singleInstancePlayerPromotedFlag.current,
+      "promotionConfirmationFlag",
+      promotionConfirmationFlag
+    );
+  }, [promotionConfirmationFlag]);
 
   const pawnPromotionQueen = useRef(false);
   const pawnPromotionKnight = useRef(false);
@@ -65,7 +113,7 @@ const User = ({
     let fenIndex2End;
     let fen = chess.fen();
     let alteredFen;
- 
+
     for (let i = 0; i < fen.length; i++) {
       console.log(fen[i]);
       if (fen[i] === "/") {
@@ -184,7 +232,6 @@ const User = ({
         console.log(promotedChessPieceFen);
         console.log("before", fenRow1Compare);
         fenRow1Compare.splice(alteredIndex, 1, promotedChessPieceFen);
-        
 
         console.log("after", fenRow1Compare);
         fenRow1CompareArray = fenRow1Compare;
@@ -296,6 +343,8 @@ const User = ({
 
     console.log(chess.fen());
     pauseGame.current = false;
+    playerPromoted.current = false;
+    singleInstancePlayerPromotedFlag.current = false;
     setEndPauseGame(true);
     console.log(pauseGame.current);
   }
@@ -315,7 +364,7 @@ const User = ({
       />
       <div
         className={`${
-          promotionConfirmationFlag === true ? "" : "hide"
+          playerPromoted.current === true ? "" : "hide"
         } pawn-promotion-container`}
       >
         <p className="pawn-promotion-title">Pawn Promotion</p>
@@ -397,4 +446,4 @@ const User = ({
   );
 };
 
-export default User;
+export default User1;

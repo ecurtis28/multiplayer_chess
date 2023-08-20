@@ -14,7 +14,7 @@ const io = new Server(server, {
   // http://localhost:3000
   // `https://multiplayer-chess-site.onrender.com`
   cors: {
-    origins: `https://multiplayer-chess-site.onrender.com`,
+    origins: `http://localhost:3000`,
 
     // location of frontend (need to somehow specify port to render so that this code works)
     // I might be able just pass the render site link
@@ -37,7 +37,6 @@ io.on("connection", (socket) => {
   let clientGameID = null;
 
   socket.on("join", ({ name, gameID }, callback) => {
-   
     // listens for join event emitted by client
     // name and gameID passed by client and destructured here into variables
 
@@ -163,7 +162,6 @@ io.on("connection", (socket) => {
 
     // emits the opponentMove event and from and to variable to the opponent
   });
-
 
   socket.on("sendPromotionFlag", ({ fenState }) => {
     console.log(fenState);

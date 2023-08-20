@@ -1,0 +1,97 @@
+.player {
+  margin: 1.5rem;
+  margin-top: 25px;
+  padding: 0.5rem 2rem;
+  text-align: center;
+  color: rgb(56, 55, 55);
+  border-radius: 1rem;
+  position: absolute;
+  z-index: 2;
+  font-size: 1.2rem;
+  cursor: pointer;
+  font-family: "Krona One", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.you {
+  background-color: #d47f57;
+  top: 2.5rem;
+  left: 1.2rem;
+}
+
+.opponent {
+  background-color: #834528;
+
+  top: 2.5rem;
+  right: 1.2rem;
+}
+
+.king {
+  width: 48px;
+  height: 48px;
+}
+.outline {
+  /* outline: 3px solid rgb(255, 255, 255); */
+  /* rgb(255, 238, 141); */
+  box-shadow: 0px 0px 10px 7px rgb(255, 255, 255);
+}
+.pawn-promotion-container {
+  display: block;
+  position: absolute;
+  top: 100px;
+  width: 130px;
+  height: 480px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+.pawn-promotion-title {
+  font-family: "Crimson Text";
+  color: #834132;
+  font-size: 17px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.pawn-promotion-piece {
+  width: 100px;
+  height: 80px;
+  cursor: pointer;
+  border: 2px solid rgba(0, 0, 0, 0);
+  /* display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: -2px; */
+}
+.pawn-promotion-piece:hover,
+.pawn-promotion-piece:active {
+  border: 2px solid #5a342e;
+  background-color: rgba(212, 126, 87, 0.747);
+  border-radius: 4px;
+}
+.pawn-promotion-piece:active {
+  box-shadow: 0px 0px 10px 7px rgb(255, 255, 255);
+}
+.pawn-promotion-piece-title {
+  font-family: "Nanum Myeongjo";
+  color: #a75542;
+  transform: translateY(5px);
+  user-select: none;
+}
+.pawn-promotion-img {
+  transform: translateY(5px);
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+.hide {
+  display: none;
+}
