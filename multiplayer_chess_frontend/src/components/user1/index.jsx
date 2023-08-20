@@ -19,12 +19,6 @@ const User1 = ({
   const image = white ? "wK" : "bK";
   // top right/left player identifier components
 
-  console.log(promotionConfirmationFlag);
-  console.log(promotionConfirmationFlag);
-  console.log(promotionConfirmationFlag);
-  console.log(promotionConfirmationFlag);
-  console.log(promotionConfirmationFlag);
-  console.log(promotionConfirmationFlag);
 
   const playerPromoted = useRef(false);
   let singleInstancePlayerPromotedFlag = useRef(false);
