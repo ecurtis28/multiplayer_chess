@@ -21,11 +21,10 @@ const io = new Server(server, {
     // I also forgot to add socket.io connect link to frontend in chessGame which is probably why I received an error
     methods: ["GET", "POST"],
   },
-  pingInterval: 5000,
-  pingTimeout: 3600000,
+  pingInterval: 2000,
+  pingTimeout: 10000,
 });
 
-let timeInterval = 0;
 let globalPlayer = null;
 let initialLoad1 = false;
 let initialLoad2 = false;

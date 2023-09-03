@@ -13,6 +13,7 @@ const Cell = (props) => {
     playerColor,
     parallelCastlingPositions,
     targetedCastlingPosition,
+    firstPlayerInactive
   } = props;
 
   // cell component which is iterated over the board array in the Board component to create a Cell component for each cell in the board array
@@ -184,6 +185,7 @@ const Cell = (props) => {
           name={cell.piece}
           setFromPob={setFromPob}
           playerColor={playerColor}
+          firstPlayerInactive={firstPlayerInactive}
         />
       </div>
     </div>

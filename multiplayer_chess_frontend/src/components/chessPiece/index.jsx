@@ -4,7 +4,7 @@ import { type } from "../../context/action";
 import "./piece-styles.css";
 
 const Piece = (props) => {
-  const { name, pob, setFromPob, playerColor } = props;
+  const { name, pob, setFromPob, playerColor, firstPlayerInactive } = props;
   const chessColor = name === name.toUpperCase() ? "w" : "b";
 
   // will check if piece is uppercase or lowercase which will determine if it is a black chess piece or a white chess piece
@@ -51,7 +51,9 @@ const Piece = (props) => {
   const handleClick = () => console.log({ name, pob });
   return (
     <div
-      className={`piece ${playerColor === chessColor ? "active" : "inactive"}`}
+      className={`piece ${playerColor === chessColor ? "active" : "inactive"} ${
+        firstPlayerInactive === true ? "inactive" : "active"
+      } `}
       style={{
         background: `url(${image}) center center/cover`,
       }}

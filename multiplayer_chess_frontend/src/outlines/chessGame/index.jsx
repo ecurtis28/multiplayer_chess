@@ -188,7 +188,7 @@ const Game = () => {
   };
   const [fromToData, setFromToData] = useState(initialValues);
   const [endPauseGame, setEndPauseGame] = useState(false);
-
+  const [firstPlayerInactive, setFirstPlayerInactive] = useState(false);
   useEffect(() => {
     console.log("checking fen state", fenState);
     setChessBoard(createChessBoard(fenState));
@@ -214,9 +214,10 @@ const Game = () => {
     useState(null);
 
   const moveChessPiece = (pob, pieceInTargetCell) => {
-    console.log(pauseGame);
+    console.log("pauseGame", pauseGame);
     console.log(playerColor);
     console.log(chess);
+    console.log("disableFlag", disableFlag);
 
     console.log("inCheck", inCheck);
     if (inCheck) {
@@ -1461,6 +1462,11 @@ const Game = () => {
   // is because I do not want the socket.emit("join") event to be emitted to the backend socket server every time one of these states is altered
 
   useEffect(() => {
+    socket.on("opponentJoin", () => {
+      if (opponentName !== undefined) {
+        setFirstPlayerInactive(false);
+      }
+    });
     if (opponentLeftState === true) {
       socket.on("opponentJoin", () => {
         //listens for opponentJoin event from backend
@@ -1487,6 +1493,34 @@ const Game = () => {
       // socket.emit('reinitializeReloadModeBackend')
     }
   }, [dispatch, reloadState]);
+
+  useEffect(() => {
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    console.log("opponentName", opponentName);
+    if (opponentName === undefined) {
+      setFirstPlayerInactive(true);
+    }
+  }, [dispatch, opponentName]);
   useEffect(() => {
     socket.on("receiveReloadState", ({ receivedFromOpponentReloadState }) => {
       console.log(
@@ -1768,6 +1802,7 @@ const Game = () => {
         playerColor={playerColor}
         parallelCastlingPositions={parallelCastlingPositions}
         targetedCastlingPosition={targetedCastlingPosition}
+        firstPlayerInactive={firstPlayerInactive}
       />
       <ButtonContainer
         concedeDisabled={concedeDisabled}
