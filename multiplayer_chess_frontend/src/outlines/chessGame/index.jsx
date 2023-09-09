@@ -1502,73 +1502,7 @@ const Game = () => {
   }, [dispatch, opponentName]);
   useEffect(() => {
     socket.on("receiveReloadState", ({ receivedFromOpponentReloadState }) => {
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
-
-      console.log(
-        "received from opponent reload state",
-        receivedFromOpponentReloadState
-      );
+    
 
       console.log(receivedFromOpponentReloadState);
       if (receivedFromOpponentReloadState === true) {
