@@ -1495,28 +1495,7 @@ const Game = () => {
   }, [dispatch, reloadState]);
 
   useEffect(() => {
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
-    console.log("opponentName", opponentName);
+   
     if (opponentName === undefined) {
       setFirstPlayerInactive(true);
     }
